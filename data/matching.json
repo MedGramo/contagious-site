@@ -1,0 +1,566 @@
+[
+  {
+    "drug": "Penicillina G",
+    "category": "β-lattamico (penicillina naturale)",
+    "matches": [
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 3, "covers": true, "notes": "S. pyogenes, S. pneumoniae sensibili" },
+      { "cluster": "GP: Altri bacilli (Listeria, Coryne, Nocardia/Actino, Clostridioides, Bacillus)", "priority": 3, "covers": true, "notes": "Farmaco di scelta per sifilide" },
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 1, "covers": false, "notes": "Inattivata da penicillinasi (MSSA)" }
+    ],
+    "avoid": ["Gram negativi (molti bacilli)", "Stafilococchi produttori di β-lattamasi"],
+    "source": ""
+  },
+  {
+    "drug": "Penicillina V",
+    "category": "β-lattamico (penicillina naturale – orale)",
+    "matches": [
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 3, "covers": true, "notes": "Faringotonsilliti streptococciche" },
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 1, "covers": false, "notes": "Non stabile vs penicillinasi" }
+    ],
+    "avoid": ["Gram negativi (molti bacilli)", "Stafilococchi produttori di β-lattamasi"],
+    "source": ""
+  },
+  {
+    "drug": "Oxacillina/nafcillina/dicloxacillina",
+    "category": "β-lattamico (penicilline anti-stafilococco)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "Prima scelta per MSSA" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Attività su streptococchi" }
+    ],
+    "avoid": ["MRSA", "Enterococchi", "Gram negativi"],
+    "source": ""
+  },
+  {
+    "drug": "Amoxicillina",
+    "category": "β-lattamico (aminopenicillina)",
+    "matches": [
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 3, "covers": true, "notes": "Infezioni ORL/respiratorie" },
+      { "cluster": "GP: Enterococchi", "priority": 2, "covers": true, "notes": "E. faecalis (sensibile)" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "Enterobacterales comunitari sensibili" }
+    ],
+    "avoid": ["β-lattamasi (necessario inibitore)", "Pseudomonas", "ESBL", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Ampicillina",
+    "category": "β-lattamico (aminopenicillina)",
+    "matches": [
+      { "cluster": "GP: Altri bacilli (Listeria, Coryne, Nocardia/Actino, Clostridioides, Bacillus)", "priority": 3, "covers": true, "notes": "Scelta per Listeria (meningiti anziano)" },
+      { "cluster": "GP: Enterococchi", "priority": 2, "covers": true, "notes": "E. faecalis (± sinergia gentamicina)" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "Alcuni Enterobacterales comunitari" }
+    ],
+    "avoid": ["ESBL/AmpC", "Pseudomonas", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Amoxicillina/acido clavulanico",
+    "category": "β-lattamico (penicillina protetta)",
+    "matches": [
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 3, "covers": true, "notes": "H. influenzae, Moraxella ORL/resp" },
+      { "cluster": "Anaerobi — Sopra diaframma", "priority": 2, "covers": true, "notes": "Anaerobi orali (Prevotella, Fusobacterium)" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "E. coli/Klebsiella non ESBL" }
+    ],
+    "avoid": ["Pseudomonas", "MRSA", "Atipici", "ESBL/AmpC"],
+    "source": ""
+  },
+  {
+    "drug": "Ampicillina/sulbactam",
+    "category": "β-lattamico (penicillina protetta)",
+    "matches": [
+      { "cluster": "GP: Enterococchi", "priority": 3, "covers": true, "notes": "Enterococchi sensibili" },
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 2, "covers": true, "notes": "H. influenzae, Moraxella" },
+      { "cluster": "Anaerobi — Sopra diaframma", "priority": 1, "covers": true, "notes": "Anaerobi orali" }
+    ],
+    "avoid": ["Pseudomonas", "ESBL/AmpC", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Piperacillina/tazobactam",
+    "category": "β-lattamico (antipseudomonas + inibitore)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Copertura Pseudomonas" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 2, "covers": true, "notes": "Ampio su Enterobacterales" },
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 2, "covers": true, "notes": "Buona copertura Bacteroides" }
+    ],
+    "avoid": ["MRSA", "Atipici", "VRE"],
+    "source": ""
+  },
+  {
+    "drug": "Cefazolina",
+    "category": "β-lattamico (cefalosporina I gen.)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MSSA (profilassi chirurgica)" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Streptococchi" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "Alcuni Enterobacterales" }
+    ],
+    "avoid": ["MRSA", "Enterococchi", "Pseudomonas", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Cefalexina",
+    "category": "β-lattamico (cefalosporina I gen. – orale)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MSSA cutanee/urinarie" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Streptococchi orofaringei" }
+    ],
+    "avoid": ["MRSA", "Enterococchi", "Pseudomonas", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Cefaclor",
+    "category": "β-lattamico (cefalosporina II gen.)",
+    "matches": [
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 2, "covers": true, "notes": "H. influenzae/Moraxella (meno usata)" }
+    ],
+    "avoid": ["MRSA", "Pseudomonas", "ESBL", "Listeria"],
+    "source": ""
+  },
+  {
+    "drug": "Cefoxitina/cefotetan",
+    "category": "β-lattamico (cefalosporine II gen. – cefamicine)",
+    "matches": [
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 3, "covers": true, "notes": "Buona attività su Bacteroides" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 2, "covers": true, "notes": "Enterobacterales comunitari" }
+    ],
+    "avoid": ["Pseudomonas", "MRSA", "Enterococchi", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Ceftriaxone",
+    "category": "β-lattamico (cefalosporina III gen.)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 3, "covers": true, "notes": "Sepsi/uro/polmoniti comunitarie" },
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 2, "covers": true, "notes": "Neisseria, H. influenzae (meningiti)" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 1, "covers": true, "notes": "Pneumococco sensibile" }
+    ],
+    "avoid": ["Pseudomonas", "MRSA", "Listeria"],
+    "source": ""
+  },
+  {
+    "drug": "Cefotaxime",
+    "category": "β-lattamico (cefalosporina III gen.)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 3, "covers": true, "notes": "Batteriemie/meningiti comunitarie" },
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 2, "covers": true, "notes": "Neisseria, H. influenzae" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 1, "covers": true, "notes": "Pneumococco sensibile" }
+    ],
+    "avoid": ["Pseudomonas", "MRSA", "Listeria"],
+    "source": ""
+  },
+ {
+  "drug": "Ceftazidime",
+  "category": "β-lattamico (cefalosporina III gen.)",
+  "matches": [
+    {
+      "cluster": "GN: Non fermentanti (Pseudomonas)",
+      "priority": 3,
+      "covers": true,
+      "notes": "Spiccata attività anti-Pseudomonas."
+    },
+    {
+      "cluster": "GN: Enterobacterales (lattosio+)",
+      "priority": 2,
+      "covers": true,
+      "notes": "Enterici Gram− (non ESBL)."
+    },
+    {
+      "cluster": "GN: Enterobacterales (lattosio−)",
+      "priority": 1,
+      "covers": true,
+      "notes": "Alcune specie (es. Proteus, ecc.)."
+    }
+  ],
+  "avoid": [
+    "MRSA",
+    "Stafilococchi",
+    "Streptococchi",
+    "Listeria",
+    "Anaerobi"
+  ],
+  "source": ""
+},
+
+ {
+  "drug": "Cefepime",
+  "category": "β-lattamico (cefalosporina IV gen.)",
+  "matches": [
+    {
+      "cluster": "GN: Non fermentanti (Pseudomonas)",
+      "priority": 3,
+      "covers": true,
+      "notes": "Ottima attività anti-Pseudomonas."
+    },
+    {
+      "cluster": "GN: Enterobacterales (lattosio+)",
+      "priority": 2,
+      "covers": true,
+      "notes": "Attivo su molti enterici; stabile ad AmpC."
+    },
+    {
+      "cluster": "GN: Enterobacterales (lattosio−)",
+      "priority": 2,
+      "covers": true,
+      "notes": "Copertura ampia su Gram− non fermentanti enterici."
+    },
+    {
+      "cluster": "GP: Stafilococchi (MSSA/MRSA)",
+      "priority": 1,
+      "covers": true,
+      "notes": "MSSA (MRSA escluso)."
+    }
+  ],
+  "avoid": [
+    "MRSA",
+    "Listeria",
+    "Anaerobi obbligati"
+  ],
+  "source": ""
+},
+
+  {
+    "drug": "Ceftarolina",
+    "category": "β-lattamico (cefalosporina V gen.)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "Attiva su MRSA" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Pneumococco" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "Alcuni Gram- comunitari (non Pseudomonas)" }
+    ],
+    "avoid": ["Pseudomonas", "Enterococchi", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Meropenem",
+    "category": "β-lattamico (carbapeneme)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Pseudomonas (nosocomiale)" },
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 3, "covers": true, "notes": "Ampio spettro incl. ESBL/AmpC" },
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 2, "covers": true, "notes": "Anaerobi compresi Bacteroides" }
+    ],
+    "avoid": ["MRSA", "VRE", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Imipenem/cilastatina",
+    "category": "β-lattamico (carbapeneme)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Pseudomonas" },
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 3, "covers": true, "notes": "Ampio spettro incl. ESBL/AmpC" },
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 2, "covers": true, "notes": "Anaerobi" }
+    ],
+    "avoid": ["MRSA", "VRE", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Doripenem",
+    "category": "β-lattamico (carbapeneme)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Attivo su Pseudomonas" },
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 3, "covers": true, "notes": "Ampio spettro Gram-" },
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 2, "covers": true, "notes": "Anaerobi" }
+    ],
+    "avoid": ["MRSA", "VRE", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Ertapenem",
+    "category": "β-lattamico (carbapeneme)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 3, "covers": true, "notes": "ESBL comunitari/complicate UTI" },
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 2, "covers": true, "notes": "Anaerobi" }
+    ],
+    "avoid": ["Pseudomonas", "Acinetobacter", "Enterococchi", "MRSA"],
+    "source": ""
+  },
+  {
+    "drug": "Aztreonam",
+    "category": "Monobactam",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 3, "covers": true, "notes": "Gram- aerobi (allergia penicilline)" },
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 2, "covers": true, "notes": "Pseudomonas" }
+    ],
+    "avoid": ["Gram positivi", "Anaerobi", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Vancomicina",
+    "category": "Glicopeptide",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MRSA (TDM AUC/MIC)" },
+      { "cluster": "GP: Enterococchi", "priority": 2, "covers": true, "notes": "Eccetto VRE" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 1, "covers": true, "notes": "Alternativa allergia β-lattamici" }
+    ],
+    "avoid": ["Gram negativi", "Listeria", "Atipici"],
+    "source": "",
+    "notes": "Non indicata per Listeria nelle meningiti (preferire ampicillina)"
+  },
+  {
+  "drug": "Teicoplanina",
+  "category": "Glicopeptide",
+  "matches": [
+    {
+      "cluster": "GP: Stafilococchi (MSSA/MRSA)",
+      "priority": 3,
+      "covers": true,
+      "notes": "Alternativa a vancomicina per MRSA/MSSA; emivita lunga → utile per dimissioni/OPAT."
+    },
+    {
+      "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)",
+      "priority": 2,
+      "covers": true,
+      "notes": "Buona attività su streptococchi."
+    },
+    {
+      "cluster": "GP: Enterococchi",
+      "priority": 1,
+      "covers": true,
+      "notes": "Attiva su Enterococchi non VRE."
+    }
+  ],
+  "avoid": [
+    "Gram negativi",
+    "VRE",
+    "Atipici"
+  ],
+  "source": ""
+},
+
+  {
+    "drug": "Dalbavancina",
+    "category": "Lipo-glicopeptide (long-acting)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MRSA cute/soft tissue (dose settimanale)" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Streptococchi" }
+    ],
+    "avoid": ["Gram negativi", "Enterococchi VRE", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Fosfomicina (orale)",
+    "category": "Antimetabolita parete (fosfoenolpiruvato transferasi)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 3, "covers": true, "notes": "Cistite da E. coli, incl. ESBL" },
+      { "cluster": "GP: Enterococchi", "priority": 1, "covers": true, "notes": "Enterococchi urinari" }
+    ],
+    "avoid": ["Pseudomonas (variabile)", "Infezioni sistemiche"],
+    "source": ""
+  },
+  {
+    "drug": "Daptomicina",
+    "category": "Lipopeptide (disfunzione membrana)",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MRSA batteriemia/endocardite" },
+      { "cluster": "GP: Enterococchi", "priority": 3, "covers": true, "notes": "VRE (batteriemia)" }
+    ],
+    "avoid": ["Polmoniti (inattivata dal surfattante)", "Gram negativi", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Polimixina (colistina/polimixina B)",
+    "category": "Polimixine (disfunzione membrana)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Acinetobacter/Stenotrophomonas)", "priority": 3, "covers": true, "notes": "Acinetobacter, Pseudomonas MDR" },
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 2, "covers": true, "notes": "Klebsiella MDR" },
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Pseudomonas MDR/carbapenem-resistente" }
+    ],
+    "avoid": ["Gram positivi", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Cotrimossazolo (TMP-SMX)",
+    "category": "Sulfonamidi",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Acinetobacter/Stenotrophomonas)", "priority": 3, "covers": true, "notes": "Stenotrophomonas maltophilia" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 2, "covers": true, "notes": "UTI da Enterobacterales" },
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 1, "covers": true, "notes": "CA-MRSA cutanei (se sensibile)" }
+    ],
+    "avoid": ["Pseudomonas (scarsa)", "Streptococchi gruppo A (variabile)"],
+    "source": "",
+    "notes": "Anche profilassi/trattamento Pneumocystis (non batterio)"
+  },
+  {
+    "drug": "Metronidazolo",
+    "category": "Nitroimidazolo (danneggiamento DNA)",
+    "matches": [
+      { "cluster": "Anaerobi — Sotto diaframma", "priority": 3, "covers": true, "notes": "Intra-addominali, ascessi, vaginosi" },
+      { "cluster": "GP: Altri bacilli (Listeria, Coryne, Nocardia/Actino, Clostridioides, Bacillus)", "priority": 1, "covers": true, "notes": "Alternativa se non disponibile fidaxomicina/vancomicina PO" }
+    ],
+    "avoid": ["Aerobi Gram+ e Gram-", "Atipici"],
+    "source": ""
+  },
+  {
+    "drug": "Nitrofurantoina",
+    "category": "Nitrofurano (danneggiamento DNA)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 3, "covers": true, "notes": "Cistite non complicata (E. coli)" }
+    ],
+    "avoid": ["Pielonefrite (scarsa penetrazione)", "Pseudomonas", "Proteus"],
+    "source": ""
+  },
+  {
+  "drug": "Rifampicina",
+  "category": "Rifamicina (inibitore RNA-pol)",
+  "matches": [
+    {
+      "cluster": "GP: Stafilococchi (MSSA/MRSA)",
+      "priority": 2,
+      "covers": true,
+      "notes": "In combinazione per biofilm stafilococcico (protesi valvolari/ortopediche). Mai in monoterapia."
+    }
+  ],
+  "avoid": [
+    "Monoterapia",
+    "Gram negativi",
+    "Infezioni extra-biofilm"
+  ],
+  "source": "Uso anti-biofilm stafilococcico"
+},
+
+
+  {
+  "drug": "Fidaxomicina",
+  "category": "Macrociclico (inibitore RNA-pol) — CDI",
+  "matches": [
+    {
+      "cluster": "GP: Altri bacilli (Listeria, Coryne, Nocardia/Actino, Clostridioides, Bacillus)",
+      "priority": 3,
+      "covers": true,
+      "notes": "Mirata a Clostridioides difficile (CDI). Assorbimento sistemico minimo."
+    }
+  ],
+  "avoid": [
+    "Infezioni extraintestinali",
+    "Gram negativi",
+    "Atipici"
+  ],
+  "source": ""
+},
+
+  {
+    "drug": "Levofloxacina",
+    "category": "Fluorochinolone respiratorio",
+    "matches": [
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Legionella, Mycoplasma, Chlamydia" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Pneumococco (CAP)" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 1, "covers": true, "notes": "Gram- comunitari" }
+    ],
+    "avoid": ["MRSA", "C. difficile (rischio)"],
+    "source": ""
+  },
+  {
+    "drug": "Moxifloxacina",
+    "category": "Fluorochinolone respiratorio",
+    "matches": [
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Atypicals respiratori" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Pneumococco" }
+    ],
+    "avoid": ["Pseudomonas", "UTI (scarsa escrezione)", "MRSA"],
+    "source": ""
+  },
+  {
+    "drug": "Gemifloxacina",
+    "category": "Fluorochinolone respiratorio",
+    "matches": [
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Atypicals" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Pneumococco" }
+    ],
+    "avoid": ["Pseudomonas", "MRSA"],
+    "source": ""
+  },
+  {
+  "drug": "Ciprofloxacina",
+  "category": "Fluorochinolone (non respiratorio)",
+  "matches": [
+    { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Ottima attività anti-Pseudomonas; setting nosocomiale" },
+    { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 2, "covers": true, "notes": "UTI, diarree invasive (Shigella/Salmonella) non-ESBL" },
+    { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 1, "covers": true, "notes": "Alcune specie (es. Proteus spp.)" }
+  ],
+  "avoid": ["GP: Streptococchi (pneumococco: attività insufficiente per CAP)", "GP: Stafilococchi/MRSA in monoterapia", "Anaerobi"],
+  "source": ""
+  },
+  {
+    "drug": "Clindamicina",
+    "category": "Lincosamide (50S)",
+    "matches": [
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 3, "covers": true, "notes": "Tossina-inibizione in necrotizzanti (in combo)" },
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 2, "covers": true, "notes": "MSSA/CA-MRSA (se sensibile)" },
+      { "cluster": "Anaerobi — Sopra diaframma", "priority": 2, "covers": true, "notes": "Anaerobi sopra diaframma" }
+    ],
+    "avoid": ["Gram negativi aerobi", "C. difficile (rischio colite)"],
+    "source": ""
+  },
+  {
+    "drug": "Linezolid",
+    "category": "Oxazolidinoni",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MRSA inclusa polmonite" },
+      { "cluster": "GP: Enterococchi", "priority": 3, "covers": true, "notes": "VRE" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Streptococchi" }
+    ],
+    "avoid": ["Gram negativi", "Uso prolungato (mielosoppressione)"],
+    "source": ""
+  },
+  {
+    "drug": "Tedizolid",
+    "category": "Oxazolidinoni",
+    "matches": [
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 3, "covers": true, "notes": "MRSA cute/soft tissue" },
+      { "cluster": "GP: Enterococchi", "priority": 2, "covers": true, "notes": "VRE (dati limitati)" }
+    ],
+    "avoid": ["Gram negativi"],
+    "source": ""
+  },
+  {
+    "drug": "Cloramfenicolo",
+    "category": "Fenicolo (50S)",
+    "matches": [
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 1, "covers": true, "notes": "Alternative risorsa limitata (meningiti)" },
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 1, "covers": true, "notes": "Rickettsie (alternativa)" }
+    ],
+    "avoid": ["Tossicità ematologica", "Gram- severi (prima scelta altrove)"],
+    "source": ""
+  },
+  {
+    "drug": "Macrolidi (azitromicina/claritromicina/eritromicina)",
+    "category": "Macrolidi (50S)",
+    "matches": [
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Legionella, Mycoplasma, Chlamydia" },
+      { "cluster": "GP: Streptococchi (β-emolitici, viridans, pneumoniae)", "priority": 2, "covers": true, "notes": "Streptococchi ORL" },
+      { "cluster": "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)", "priority": 1, "covers": true, "notes": "H. influenzae/Moraxella (variabile)" }
+    ],
+    "avoid": ["Enterobacterales severi", "Pseudomonas", "MRSA (ospedaliero)"],
+    "source": ""
+  },
+  {
+    "drug": "Aminoglicosidi (gentamicina/tobramicina/amikacina)",
+    "category": "Aminoglicosidi (30S – concentrazione dipendenti)",
+    "matches": [
+      { "cluster": "GN: Non fermentanti (Pseudomonas)", "priority": 3, "covers": true, "notes": "Pseudomonas/Gram- nosocomiali" },
+      { "cluster": "GP: Enterococchi", "priority": 2, "covers": true, "notes": "Sinergia con β-lattamici in endocarditi" },
+      { "cluster": "GN: Enterobacterales (lattosio+)", "priority": 2, "covers": true, "notes": "Batteriemie severe (in associazione)" }
+    ],
+    "avoid": ["Monoterapia infezioni profonde", "Anaerobi", "Insufficienza renale (attenzione)"],
+    "source": ""
+  },
+  {
+    "drug": "Doxiciclina/tetraciclina",
+    "category": "Tetracicline (30S – batteriostatici)",
+    "matches": [
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Rickettsie, Brucella (in combo)" },
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 3, "covers": true, "notes": "Malattia di Lyme (stadi precoci)" },
+      { "cluster": "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)", "priority": 2, "covers": true, "notes": "Atypicals respiratori" }
+    ],
+    "avoid": ["Gravidanza/bambini <8a", "Pseudomonas"],
+    "source": ""
+  },
+  {
+    "drug": "Tigeciclina",
+    "category": "Glicilciclina (30S)",
+    "matches": [
+      { "cluster": "GN: Enterobacterales (lattosio−)", "priority": 3, "covers": true, "notes": "ESBL, AmpC, anaerobi (intra-addominale)" },
+      { "cluster": "GP: Stafilococchi (MSSA/MRSA)", "priority": 2, "covers": true, "notes": "MRSA cutaneo-addominale" }
+    ],
+    "avoid": ["Pseudomonas", "Batteriemia severa (basse concentrazioni ematiche)"],
+    "source": ""
+  }
+
+]

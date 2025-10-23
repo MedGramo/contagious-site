@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Contagious — MedGramo</title>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#151a22; --muted:#8a90a3; --text:#e8ecf3; --accent:#7aa2ff;
+    --ok:#2ecc71; --bad:#ff6b6b; --warn:#ffb84d; --border:#262b36;
+    --gp-bg:#1c1216; --gp-bd:#4a2a34;
+    --gn-bg:#111a24; --gn-bd:#2b425c;
+    --ot-bg:#122018; --ot-bd:#274a35;
+    --chip:#1e2a44; --chip-t:#bed0ff;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
+  .print-only{display:none;}
+  header{position:sticky; top:0; z-index:5; background:linear-gradient(180deg,var(--bg),rgba(14,17,23,.94)); border-bottom:1px solid var(--border)}
+  .wrap{max-width:1200px; margin:0 auto; padding:14px 16px}
+  h1{margin:0 0 8px; font-size:18px}
+  .toolbar{display:grid; grid-template-columns:1fr; gap:8px}
+  @media (min-width:980px){
+    .toolbar{grid-template-columns:auto auto 1fr auto auto; align-items:center}
+  }
+  select,input[type="file"]{background:#151a22; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 10px}
+  .btn{border:1px solid var(--border); background:#151a22; color:var(--text); border-radius:10px; padding:9px 12px; cursor:pointer}
+  .btn:active{transform:scale(.98)}
+  .search{display:flex; gap:8px}
+  .search input{flex:1; background:#151a22; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 12px; outline:none}
+  .pill{padding:6px 8px; border:1px solid var(--border); background:#151a22; border-radius:999px; color:var(--muted); font-size:12px}
+
+  .clinical-loader{display:none; grid-column:1/-1; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#101828; flex-wrap:wrap; gap:10px; align-items:center}
+  .clinical-loader .btn{margin:0}
+  .clinical-loader input[type="file"]{display:none}
+  .clinical-loader-status{margin-top:8px; font-size:12px; color:#b5e9c7; display:none; flex-basis:100%}
+
+  .board{max-width:1200px; margin:14px auto; display:grid; gap:14px; grid-template-columns:1fr}
+  @media (min-width:980px){ .board.two{grid-template-columns:1fr 1fr} }
+  .col{background:#151a22; border:1px solid var(--border); border-radius:14px; padding:10px; display:flex; flex-direction:column}
+  .col h2{margin:4px 6px 10px; font-size:15px}
+  .list{display:flex; flex-direction:column; overflow:auto; height:68vh; min-height:300px}
+
+  .item{border:1px solid #2a3040; border-radius:12px; padding:12px 44px 12px 12px; margin:6px; background:#0f1420; cursor:pointer; transition:.15s; position:relative}
+  .item:hover{filter:brightness(1.05)}
+  .item.selected{outline:2px solid var(--accent)}
+  .matched{background:#0f1a15; border-color:#1f3b2c; box-shadow:0 0 0 2px rgba(46,204,113,.25) inset}
+  .locked{opacity:.6; pointer-events:none}
+  .dimmed{opacity:.35}
+
+  /* contatori per-farmaco (solo Copre) */
+  .counters{position:absolute; right:36px; bottom:8px; display:flex; gap:6px; align-items:center}
+  .cnt{font-size:11px; padding:2px 6px; border-radius:999px; border:1px solid var(--border); color:#dfe6ff; background:#172036}
+  .cnt.top{background:#182432; border-color:#2e4b78}
+  .cnt.bene{background:#1b2234; border-color:#2c3d64; opacity:.95}
+  .cnt.ok{background:#1b1f2a; border-color:#32364a; opacity:.9}
+
+  /* icona info */
+  .info{position:absolute; right:8px; bottom:8px; font-size:12px; color:#bcd1ff; border:1px solid #2a3040; padding:2px 6px; border-radius:6px; cursor:pointer; user-select:none}
+  .info:hover{background:#1a2240}
+
+  /* colorazione cluster */
+  .cluster-gp{background:var(--gp-bg); border-color:var(--gp-bd)}
+  .cluster-gn{background:var(--gn-bg); border-color:var(--gn-bd)}
+  .cluster-ot{background:var(--ot-bg); border-color:var(--ot-bd)}
+
+  .mode-bugdrug #filterCategory{display:none !important;}
+  .mode-bugdrug #btnReshuffleTop{display:none !important;}
+
+  .mode-bugdrug .cluster-card{
+    background:#0f1420;
+    border-color:#2a3040;
+    color:var(--text);
+    box-shadow:none;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-right:12px;
+  }
+
+  .mode-bugdrug .cluster-card .title{
+    flex:1;
+    min-width:0;
+  }
+
+  .mode-bugdrug .cluster-card .info{
+    position:static;
+    margin:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:28px;
+    min-height:28px;
+    padding:4px 8px;
+    border-radius:8px;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+
+  .mode-bugdrug .cluster-card .info:hover,
+  .mode-bugdrug .cluster-card .info:focus-visible{
+    background:#1a2240;
+    border-color:color-mix(in srgb, #1a2240 45%, transparent);
+  }
+
+  .mode-bugdrug .cluster-card.tag-gp{
+    --accent:#FFD65A;
+  }
+
+  .mode-bugdrug .cluster-card.tag-gn{
+    --accent:#6EA8FE;
+    border-color:var(--accent);
+    box-shadow:inset 4px 0 0 var(--accent);
+  }
+
+  .mode-bugdrug .cluster-card.tag-curvi,
+  .mode-bugdrug .cluster-card.tag-ana-up,
+  .mode-bugdrug .cluster-card.tag-ana-down{
+    --accent:#C7B6FF;
+  }
+
+  .mode-bugdrug .cluster-card.tag-gp,
+  .mode-bugdrug .cluster-card.tag-curvi,
+  .mode-bugdrug .cluster-card.tag-ana-up,
+  .mode-bugdrug .cluster-card.tag-ana-down{
+    border-color:var(--accent);
+    box-shadow:inset 4px 0 0 var(--accent);
+  }
+
+  .mode-bugdrug .cluster-card.tag-gp:hover,
+  .mode-bugdrug .cluster-card.tag-curvi:hover,
+  .mode-bugdrug .cluster-card.tag-ana-up:hover,
+  .mode-bugdrug .cluster-card.tag-ana-down:hover{
+    border-color:color-mix(in srgb, var(--accent) 75%, transparent);
+    box-shadow:inset 6px 0 0 var(--accent);
+  }
+
+  .mode-bugdrug .cluster-card.tag-gn:hover{
+    border-color:#8FB8FF;
+    box-shadow:inset 6px 0 0 var(--accent);
+  }
+
+  .mode-bugdrug .cluster-card.tag-gn .info,
+  .mode-bugdrug .cluster-card.tag-gn .info-icon{
+    color:rgba(255,255,255,.85);
+  }
+
+  .mode-bugdrug .cluster-card.tag-gn .info:hover,
+  .mode-bugdrug .cluster-card.tag-gn .info-icon:hover{
+    color:#fff;
+  }
+
+  .mode-bugdrug .cluster-card .info{
+    color:rgba(255,255,255,.85);
+  }
+
+  .mode-bugdrug .cluster-card .info:hover{
+    color:#fff;
+  }
+
+  .mode-bugdrug .item.search-hit{
+    border-color:#4a5da0;
+    box-shadow:0 0 0 2px rgba(122,162,255,.35);
+    background:rgba(17,24,40,.92);
+  }
+
+  .mode-bugdrug details.has-search-hit{
+    border-radius:12px;
+    outline:1px solid rgba(122,162,255,.25);
+  }
+
+  .mode-bugdrug details.has-search-hit > summary{
+    background:rgba(122,162,255,.12);
+    color:#dce6ff;
+    border-radius:12px 12px 0 0;
+  }
+
+  .mode-bugdrug details.has-search-hit[open] > .group{
+    border-top:1px solid rgba(122,162,255,.18);
+  }
+
+  .mode-bugdrug .item.flash-ok:not(.cluster-card){
+    animation:bugdrug-flash-ok 1.5s ease-out 1;
+  }
+
+  @keyframes bugdrug-flash-ok{
+    0%{box-shadow:inset 0 0 0 0 rgba(46,204,113,0);}
+    20%{box-shadow:inset 0 0 0 9999px rgba(46,204,113,0.20);}
+    40%{box-shadow:inset 0 0 0 0 rgba(46,204,113,0);}
+    70%{box-shadow:inset 0 0 0 9999px rgba(46,204,113,0.20);}
+    100%{box-shadow:inset 0 0 0 0 rgba(46,204,113,0);}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .mode-bugdrug .item.flash-ok:not(.cluster-card){animation:none;}
+  }
+
+  /* Scoping: SOLO in Bug-Drug */
+  .mode-bugdrug .cluster-card.flash-ok::after{
+    content:""; position:absolute; inset: 3px 3px 3px 9px; /* lascia visibile stripe sinistra e bordo */
+    border-radius: calc(var(--radius, 12px) - 3px);
+    background: rgba(46,204,113,0); pointer-events:none;
+    animation: cluster-inner-flash 1.5s ease-out 1;
+    z-index: 0;
+  }
+  /* Mantieni testo/icone sopra il flash */
+  .mode-bugdrug .cluster-card > *{ position:relative; z-index: 1; }
+
+  @keyframes cluster-inner-flash{
+    0%   { background: rgba(46,204,113,0); }
+    20%  { background: rgba(46,204,113,0.22); }
+    40%  { background: rgba(46,204,113,0); }
+    70%  { background: rgba(46,204,113,0.22); }
+    100% { background: rgba(46,204,113,0); }
+  }
+
+  /* Accessibilità: rispetta chi riduce le animazioni */
+  @media (prefers-reduced-motion: reduce){
+    .mode-bugdrug .cluster-card.flash-ok::after { animation:none; }
+  }
+
+  .warnbox{max-width:1200px; margin:8px auto 0; padding:10px 12px; border:1px solid #5a4b24; background:#2c2412; color:#f6d28b; border-radius:10px; display:none}
+  .error{max-width:1200px; margin:10px auto 0; padding:10px 12px; border:1px solid #553; background:#2a1414; color:#f1c3c3; border-radius:10px; display:none}
+  .foot{max-width:1200px; margin:14px auto 32px; color:var(--muted); font-size:12px; padding:0 16px}
+  .app-disclaimer{max-width:1200px; margin:0 auto 36px; padding:12px 16px; font-size:12px; line-height:1.5; color:var(--muted); background:rgba(15,20,32,.75); border:1px solid var(--border); border-radius:12px}
+
+  /* accordion */
+  details{border:1px solid #2a3040; border-radius:12px; margin:6px; background:#0f1420}
+  summary{cursor:pointer; padding:10px 12px; font-weight:600}
+  .group{padding:6px 10px 10px}
+  .clinical-group > .group{padding:6px 10px 12px}
+  .clinical-subgroup{border:1px solid #2a3040; border-radius:10px; margin:6px 0; background:#101828}
+  .clinical-subgroup summary{padding:8px 10px; font-size:13px}
+  .clinical-subgroup-items{padding:6px 8px 10px}
+  .clinical-subgroup-items .item{margin:6px 2px 0}
+  .clinical-subgroup-items .item:first-child{margin-top:0}
+
+  /* Modal soluzioni */
+  .modal{position:fixed; inset:0; display:none; z-index:10000}
+  .modal.show{display:block}
+  .backdrop{position:absolute; inset:0; background:rgba(0,0,0,.55)}
+  .card{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:720px; width:92vw; background:#0f1420; border:1px solid var(--border); border-radius:12px; padding:14px}
+  .card h3{margin:0 0 8px}
+  .chips .chip{display:inline-block; margin:4px 6px 0 0; padding:4px 8px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:#c9d2f0}
+  .case-actions{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px}
+  .case-actions + .case-actions{margin-top:8px}
+  #clin-slots{margin-top:12px; border:1px solid var(--border); border-radius:12px; background:#101828; padding:12px; position:relative; display:flex; flex-direction:column; gap:10px}
+  #clin-slots::after{content:''; position:absolute; inset:0; border-radius:12px; pointer-events:none; box-shadow:0 0 0 1px rgba(122,162,255,.06) inset}
+  .clin-slot-banner{display:none; align-self:flex-start; background:#13221a; color:#b5e9c7; border:1px solid #1f3b2c; border-radius:999px; padding:4px 10px; font-weight:600; font-size:13px}
+  .clin-slot-list{display:flex; flex-direction:column; gap:8px}
+  .clin-slot{display:flex; align-items:center; gap:10px; border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#111726; color:#cdd7f2; transition:background .2s, border-color .2s, color .2s}
+  .clin-slot.empty{color:#707897; background:#111726}
+  .clin-slot.empty .clin-slot-bullet{color:#4b5168}
+  .clin-slot.empty .clin-slot-label{display:none}
+  .clin-slot.filled{background:#13221a; border-color:#1f3b2c; color:#b5e9c7}
+  .clin-slot.filled .clin-slot-bullet{color:#b5e9c7}
+  .clin-slot.locked{opacity:.92; pointer-events:none}
+  .clin-slot-bullet{font-size:18px; color:var(--accent)}
+  .clin-slot-label{flex:1; font-weight:600; font-size:13px}
+  .clin-slot-empty-message{color:#7f89a8; font-size:13px; padding:10px 0}
+  #clin-notes{margin-top:10px; border:1px solid var(--border); border-radius:12px; background:#101828; padding:10px 12px; font-size:13px; color:#cfe0ff; display:none}
+  #clin-notes ul{margin:4px 0 0; padding-left:18px; list-style:disc}
+  #clin-notes li{margin:4px 0; line-height:1.4}
+  .item .subtitle{margin-top:4px; color:#9fb0d0; font-size:12px}
+  .solution-list{margin:10px 0 0; padding-left:18px; list-style:disc; line-height:1.5}
+  .solution-list li{margin:6px 0}
+  .case-vignette{margin-top:6px; line-height:1.5}
+  .compat-section{margin-top:12px}
+  .compat-section h4{margin:0 0 6px; color:#9fb5ff; font-size:13px}
+  .compat-section ul{margin:0; padding-left:18px; list-style:disc; color:#d0d8f4; font-size:13px}
+  .compat-section li{margin:4px 0}
+  .compat-clusters{display:block; color:#9fb0d0; font-size:12px}
+  .compat-reason{display:block; color:#f1c3c3; font-size:12px; margin-top:2px}
+  .compat-empty{color:#7f89a8; font-size:12px; margin:4px 0}
+  .case-solution-text{margin-bottom:12px; line-height:1.55}
+  .rec-block{border:1px solid #2a3040; border-radius:10px; padding:10px 12px; margin-top:10px; background:#101828}
+  .rec-block:first-of-type{margin-top:0}
+  .rec-block strong{color:#cfe0ff}
+  .rec-block small{color:#9fb0d0}
+
+  /* Toast centrale */
+  .toast-wrap{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:11000}
+  .toast{background:#101828; border:1px solid var(--border); color:#fff; padding:12px 16px; border-radius:10px; font-weight:700; opacity:0; transform:translateY(-6px); transition:opacity .15s, transform .15s; white-space:pre-line}
+  .toast.show{opacity:1; transform:translateY(0)}
+  .toast.ok{background:#12261a; color:#b5e9c7; border-color:#1f3b2c}
+  .toast.bad{background:#2a1414; color:#f0c1c1; border-color:#553333}
+  .toast.mid{background:#1b2337; color:#cfe0ff; border-color:#2a365f}
+
+  /* Impara */
+  .mode-impara .learn-table-wrap{overflow:auto; height:68vh; border:1px solid #232a38; border-radius:8px; background:#121722; box-shadow:0 12px 30px rgba(0,0,0,.3) inset;}
+  .mode-impara .learn-table{width:100%; border-collapse:collapse; min-width:720px; color:var(--text);}
+  .mode-impara .learn-table thead th{position:sticky; top:0; background:rgba(24,30,44,.92); color:#f2f5ff; text-align:left;}
+  .mode-impara .learn-table th,
+  .mode-impara .learn-table td{padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.06); vertical-align:top;}
+  .mode-impara .learn-table tbody tr:nth-child(odd){background:rgba(255,255,255,.02);}
+  .mode-impara .learn-table tbody tr:nth-child(even){background:rgba(255,255,255,.07);}
+  .mode-impara .learn-table tbody tr:hover{background:rgba(148,173,255,.12);}
+  .mode-impara .learn-table td b{color:#ffffff;}
+  .mode-impara .learn-table td small{color:#9fb0d0;}
+  .mode-impara .learn-table td br+small{display:inline-block; margin-top:2px;}
+  .mode-impara .learn-table td:last-child{min-width:180px;}
+  .mode-impara .board .col:last-child{display:none;}
+
+  #btnPrintPDF,
+  #btnLearnInfo{display:none;}
+  .mode-impara #btnPrintPDF,
+  .mode-impara #btnLearnInfo{display:inline-flex; align-items:center; gap:6px; background:#202a3f; color:#dce6ff; border:1px solid rgba(255,255,255,.1);}
+  .mode-impara #btnPrintPDF:hover,
+  .mode-impara #btnPrintPDF:focus-visible,
+  .mode-impara #btnLearnInfo:hover,
+  .mode-impara #btnLearnInfo:focus-visible{background:#2b3752; color:#fff;}
+  .mode-impara #filterCategory,
+  .mode-impara #filterCluster,
+  .mode-impara #btnReshuffleTop,
+  .mode-impara #btnReset,
+  .mode-impara #fileDrugs,
+  .mode-impara .clinical-loader{display:none !important;}
+
+  .mode-impara .toolbar{gap:10px; flex-wrap:wrap;}
+  .mode-impara .toolbar > *:not(.search):not(#btnPrintPDF):not(#btnLearnInfo):not(.pill):not(#modeSelect){display:none;}
+  .mode-impara .toolbar .pill,
+  .mode-impara .toolbar #modeSelect{order:-1;}
+  .mode-impara .search{flex:1 1 260px;}
+  .mode-impara #btnPrintPDF{order:1;}
+  .mode-impara #btnLearnInfo{order:2;}
+  .learn-info-popover{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200; padding:24px; background:rgba(6,8,12,.55);}
+  .learn-info-popover.show{display:flex;}
+  .learn-info-card{max-width:360px; width:100%; background:#182237; color:#dce6ff; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:18px 20px; box-shadow:0 20px 48px rgba(0,0,0,.45);}
+  .learn-info-card h3{margin:0 0 10px; font-size:16px; color:#f0f4ff;}
+  .learn-info-card p{margin:0 0 10px; font-size:13px; color:#d2dcff;}
+  .learn-info-card ul{margin:0; padding-left:18px; color:#c7d4ff; font-size:13px; line-height:1.5;}
+  .learn-info-card button{margin-top:14px; background:#202a3f; color:#dce6ff; border:1px solid rgba(255,255,255,.16); border-radius:8px; padding:7px 12px; cursor:pointer;}
+  .learn-info-card button:hover,
+  .learn-info-card button:focus-visible{background:#2b3752; color:#fff;}
+
+  @media (max-width:860px){
+    .mode-impara .learn-table{min-width:0;}
+  }
+
+  @media print{
+    @page{margin:12mm 12mm 14mm;}
+    html{height:auto;}
+    body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    body.mode-impara header,
+    body.mode-impara .toolbar,
+    body.mode-impara #warnBox,
+    body.mode-impara #errorBox,
+    body.mode-impara .toast-wrap,
+    body.mode-impara .foot,
+    body.mode-impara .app-disclaimer,
+    body.mode-impara #modal,
+    body.mode-impara #backdrop,
+    body.mode-impara .learn-info-popover,
+    body.mode-impara #btnLearnInfo{display:none !important;}
+    body.mode-impara .board{display:block !important; margin:0; padding:0; background:none; box-shadow:none; max-width:none; overflow:visible !important; width:100%;}
+    body.mode-impara .board.two{grid-template-columns:none;}
+    body.mode-impara .board .col{display:block; width:100%; max-width:none; padding:0; margin:0; border:none; background:none; box-shadow:none; overflow:visible !important; height:auto !important;}
+    body.mode-impara .board .col + .col{display:none;}
+    body.mode-impara .board h2{display:none !important;}
+    body.mode-impara .list{display:block; height:auto !important; max-height:none !important; min-height:0 !important; overflow:visible !important; padding:0; width:100%;}
+    body.mode-impara .learn-table-wrap{display:block; height:auto !important; max-height:none !important; overflow:visible !important; border:1px solid #c5ccd8; border-radius:6px; background:#fff; box-shadow:none; margin:0; width:100%;}
+    body.mode-impara .learn-table{width:100%; min-width:0; border-collapse:separate; background:#fff; color:#000;}
+    body.mode-impara .learn-table thead{display:table-header-group;}
+    body.mode-impara .learn-table thead th{position:static !important; top:auto !important; background:#f4f4f4; color:#000; border-bottom:1px solid #c8ced8; font-weight:700;}
+    body.mode-impara .learn-table th,
+    body.mode-impara .learn-table td{padding:9px 12px; border-bottom:1px solid #d5dbe4; color:#000; vertical-align:top; word-break:break-word;}
+    body.mode-impara .learn-table tbody tr:nth-child(odd){background:#fff;}
+    body.mode-impara .learn-table tbody tr:nth-child(even){background:#f1f1f1;}
+    body.mode-impara .learn-table tbody tr:hover{background:transparent;}
+    body.mode-impara .learn-table td small{color:#333;}
+    body.mode-impara .learn-table td b{color:#000;}
+    body.mode-impara .learn-table tbody tr{break-inside:avoid; page-break-inside:avoid;}
+    body.mode-impara .learn-table td:last-child{min-width:180px;}
+    body.mode-impara .learn-table thead .print-only th{background:#fff; border-bottom:1px solid #c8ced8; font-size:12px; letter-spacing:.02em;}
+    body.mode-impara .learn-table tfoot td{padding:8px 12px; border-top:1px solid #c8ced8; font-size:10px; line-height:1.45; font-weight:600; color:#000; background:#fff;}
+    .print-only{display:table-row;}
+    tfoot.print-only{display:table-footer-group;}
+  }
+
+  .mode-clinica #btnReshuffleTop,
+  .mode-clinica #filterCategory,
+  .mode-clinica #filterCluster{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Contagious 🦠💊©</h1>
+    <div class="toolbar">
+      <label class="pill">Modalità</label>
+      <select id="modeSelect">
+        <option value="covers">Bug-Drug</option>
+        <option value="clinical">Clinica</option>
+        <option value="learn">Impara</option>
+      </select>
+
+      <div class="search"><input id="searchInput" type="search" placeholder="Cerca farmaco/categoria/cluster…"/></div>
+      <select id="filterCategory"><option value="">Categoria farmaco: tutte</option></select>
+      <select id="filterCluster"><option value="">Cluster: tutti</option></select>
+
+      <!-- unico "Sfoglia" per i farmaci; loader clinico dedicato -->
+      <input id="fileDrugs" type="file" accept="application/json,.json" title="Carica farmaci JSON" />
+      <div id="clinicalLoader" class="clinical-loader">
+        <button type="button" class="btn" id="btnLoadClinical">Carica clinical.json (Clinica)</button>
+        <input id="fileCases" type="file" accept="application/json,.json" title="Carica clinical.json (Clinica)" />
+        <div id="clinicalStatus" class="clinical-loader-status"></div>
+      </div>
+
+      <!-- 👀 Soluzioni rimosso -->
+      <button class="btn" id="btnReshuffleTop">🔁 Reshuffle</button>
+      <button class="btn" id="btnReset">🧹 Reset</button>
+      <button class="btn" id="btnPrintPDF">🖨️ Stampa PDF</button>
+      <button class="btn" id="btnLearnInfo">ℹ️ Informazioni</button>
+    </div>
+  </div>
+</header>
+
+<div id="warnBox" class="warnbox"></div>
+<div id="errorBox" class="error"></div>
+
+<div id="board" class="board two">
+  <section class="col"><h2 id="leftTitle">Farmaci</h2><div id="leftList" class="list"></div></section>
+  <section class="col"><h2 id="rightTitle">Cluster</h2><div id="rightList" class="list"></div></section>
+</div>
+
+<p class="foot">Offline. Carica <code>mapping_antibiotici_cluster.json</code> e (per Clinica) <code>clinical.json</code>.
+ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
+
+<footer id="appDisclaimer" class="app-disclaimer" role="contentinfo"></footer>
+
+<!-- Modal soluzioni -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div id="backdrop" class="backdrop"></div>
+  <div class="card" role="dialog" aria-modal="true">
+    <h3 id="modalTitle">Soluzione</h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Toast centrale -->
+<div class="toast-wrap"><div id="toast" class="toast"></div></div>
+
+<!-- Popover informazioni stampa (Impara) -->
+<div id="learnInfoPopover" class="learn-info-popover" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="learn-info-card">
+    <h3>Informazioni stampa</h3>
+    <p>Per una stampa corretta:</p>
+    <ul>
+      <li>Disattiva <em>Intestazioni e piè di pagina</em> nel dialog di stampa del browser.</li>
+      <li>Seleziona <em>Tutte le pagine</em>.</li>
+      <li>Orientamento: <em>Verticale</em>.</li>
+      <li>Margini: <em>Default</em> (o <em>Nessuno</em>, se serve più spazio).</li>
+    </ul>
+    <button type="button" id="btnLearnInfoClose">Chiudi</button>
+  </div>
+</div>
+
+<script>
+(()=> {
+  const DEFAULT_CLUSTERS = [
+    "GP: Stafilococchi (MSSA/MRSA)",
+    "GP: Streptococchi (β-emolitici, viridans, pneumoniae)",
+    "GP: Enterococchi",
+    "GP: Altri bacilli (Listeria, Coryne, Nocardia/Actino, Clostridioides, Bacillus)",
+    "GN: Cocchi/Coccobacilli (Neisseria, H. influenzae, Moraxella)",
+    "GN: Enterobacterales (lattosio+)",
+    "GN: Enterobacterales (lattosio−)",
+    "GN: Non fermentanti (Pseudomonas)",
+    "GN: Non fermentanti (Acinetobacter/Stenotrophomonas)",
+    "Curvi/Atipici (Legionella/Chlamydia/Mycoplasma; Vibrio/Campy/Helicobacter)",
+    "Anaerobi — Sopra diaframma",
+    "Anaerobi — Sotto diaframma"
+  ];
+
+  /* ===== Gruppi antibiotici fissi ===== */
+  const AB_GROUPS_ORDER = [
+    "β-lattamici","Glicopeptidi","Lipopeptidi","Oxazolidinoni",
+    "Macrolidi/Lincosamidi","Tetracicline","Fluorochinoloni","Sulfonamidi",
+    "Aminoglicosidi","Polimixine","Nitro-","Altri"
+  ];
+  const CLINICAL_STRUCTURE_ERROR = 'File non valido: servono i campi ‘selectables’ e ‘cases’.';
+  function bucketAntibiotic(cat=""){
+    const c=cat.toLowerCase();
+    if (c.includes("lattam")) return "β-lattamici";
+    if (c.includes("glicopept")) return "Glicopeptidi";
+    if (c.includes("lipopept")||c.includes("lipept")) return "Lipopeptidi";
+    if (c.includes("oxazolidin")) return "Oxazolidinoni";
+    if (c.includes("macrol")||c.includes("lincos")) return "Macrolidi/Lincosamidi";
+    if (c.includes("tetracicl")) return "Tetracicline";
+    if (c.includes("fluorochinol")) return "Fluorochinoloni";
+    if (c.includes("sulfonam")) return "Sulfonamidi";
+    if (c.includes("aminoglicos")) return "Aminoglicosidi";
+    if (c.includes("polimix")||c.includes("polymyx")) return "Polimixine";
+    if (c.startsWith("nitro")||c.includes("nitroimid")||c.includes("nitrofur")) return "Nitro-";
+    return "Altri";
+  }
+
+  /* ===== Stato ===== */
+  let MODE = 'covers';
+  let DRUGS = [];
+  const DRUGS_BY_NAME = new Map();
+  const DRUG_NAME_INDEX = new Map();
+  let CASES = [];
+  let currentCaseIdx = 0;
+  let CLINICAL_SELECTABLES = [];
+  const CLINICAL_SELECTABLES_BY_ID = new Map();
+  let CLINICAL_GROUP_ORDER = [];
+  const CLINICAL_SUBGROUP_ORDER = new Map();
+  const clinicalSelections = new Set();
+  let clinicalAutoFetchAttempted = false;
+  let clinicalDataLoaded = false;
+  let clinicalLoadedFileName = 'clinical.json';
+  // contatori per "Copre"
+  const countersInit = new Map();   // drug -> {top:Set, bene:Set, ok:Set}
+  const countersHit  = new Map();   // drug -> {top:Set, bene:Set, ok:Set}
+
+  const lockedDrugs  = new Set();
+  const warnedMissingClusters = new Map();
+
+  const therapyState = {
+    caseKey: null,
+    definition: null,
+    selections: new Map(),
+    locked: false
+  };
+
+  const clinicalMatchProgress = {
+    key: null,
+    mode: 'set',
+    allowExtras: false,
+    slots: [],
+    filledIds: new Set(),
+    solved: false,
+    notes: [],
+    container: null,
+    listEl: null,
+    bannerEl: null,
+    notesEl: null
+  };
+  let toastTimer = null;
+  const bugDrugSearchMatches = new Set();
+  let bugDrugSearchQuery = '';
+  const DISCLAIMER_STORAGE_KEY = '__appDisclaimerOverride__';
+  const DEFAULT_DISCLAIMER_TEXT = "Uso didattico e non commerciale. Non fornisce diagnosi/terapie; verificare sempre su fonti ufficiali. © 2025 David Vigilanti — MedGramo.";
+  let disclaimerOverride = '';
+
+  /* ===== DOM ===== */
+  const rootContainer = document.body;
+  const modeSelect = document.getElementById('modeSelect');
+  const board = document.getElementById('board');
+  const leftTitle  = document.getElementById('leftTitle');
+  const rightTitle = document.getElementById('rightTitle');
+  const leftList   = document.getElementById('leftList');
+  const rightList  = document.getElementById('rightList');
+  const disclaimerEl = document.getElementById('appDisclaimer');
+
+  document.title = 'Contagious — MedGramo';
+
+  const searchInput = document.getElementById('searchInput');
+  const filterCategory = document.getElementById('filterCategory');
+  const filterCluster  = document.getElementById('filterCluster');
+
+  const warnBox   = document.getElementById('warnBox');
+  const errorBox  = document.getElementById('errorBox');
+
+  const fileDrugs = document.getElementById('fileDrugs');
+  const fileCases = document.getElementById('fileCases');
+  const clinicalLoader = document.getElementById('clinicalLoader');
+  const clinicalStatus = document.getElementById('clinicalStatus');
+  const btnLoadClinical = document.getElementById('btnLoadClinical');
+
+  const btnReshuffleTop = document.getElementById('btnReshuffleTop');
+  const btnReset = document.getElementById('btnReset');
+  const btnPrintPDF = document.getElementById('btnPrintPDF');
+  const btnLearnInfo = document.getElementById('btnLearnInfo');
+  const learnInfoPopover = document.getElementById('learnInfoPopover');
+  const btnLearnInfoClose = document.getElementById('btnLearnInfoClose');
+
+  const modal = document.getElementById('modal');
+  const backdrop = document.getElementById('backdrop');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const toast = document.getElementById('toast');
+
+  /* ===== Disclaimer ===== */
+  const readStoredDisclaimer = ()=>{
+    if (typeof window.__APP_DISCLAIMER__ === 'string'){
+      const trimmed = window.__APP_DISCLAIMER__.trim();
+      if (trimmed) return trimmed;
+    }
+    try {
+      const stored = localStorage.getItem(DISCLAIMER_STORAGE_KEY);
+      if (typeof stored === 'string' && stored.trim()){
+        return stored.trim();
+      }
+    } catch (err) {
+      // storage non disponibile
+    }
+    return '';
+  };
+
+  const applyDisclaimerText = ()=>{
+    if (!disclaimerEl) return;
+    const text = disclaimerOverride || DEFAULT_DISCLAIMER_TEXT;
+    disclaimerEl.textContent = text;
+  };
+
+  disclaimerOverride = readStoredDisclaimer();
+
+  const persistDisclaimer = ()=>{
+    try {
+      if (disclaimerOverride){
+        localStorage.setItem(DISCLAIMER_STORAGE_KEY, disclaimerOverride);
+      } else {
+        localStorage.removeItem(DISCLAIMER_STORAGE_KEY);
+      }
+    } catch (err) {
+      // storage non disponibile
+    }
+  };
+
+  persistDisclaimer();
+  applyDisclaimerText();
+
+  if (typeof window !== 'undefined'){
+    try {
+      Object.defineProperty(window, '__APP_DISCLAIMER__', {
+        configurable: true,
+        get(){
+          return disclaimerOverride || DEFAULT_DISCLAIMER_TEXT;
+        },
+        set(value){
+          disclaimerOverride = (typeof value === 'string') ? value.trim() : '';
+          persistDisclaimer();
+          applyDisclaimerText();
+        }
+      });
+    } catch (err) {
+      window.__APP_DISCLAIMER__ = disclaimerOverride;
+    }
+  }
+
+  /* ===== Utils ===== */
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const shuffle = a => a.map(v=>({v,r:Math.random()})).sort((x,y)=>x.r-y.r).map(x=>x.v);
+  const normalizeSearchValue = value =>
+    typeof value === 'string'
+      ? value
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+      : '';
+
+  const getDrugSearchHaystack = drug => {
+    if (!drug || typeof drug !== 'object') return '';
+    if (typeof drug._searchHaystack === 'string') return drug._searchHaystack;
+    const parts = [];
+    const push = value => {
+      if (typeof value === 'string'){
+        const trimmed = value.trim();
+        if (trimmed) parts.push(trimmed);
+      }
+    };
+    push(drug.drug);
+    push(drug.category);
+    if (typeof drug.name === 'string') push(drug.name);
+    if (typeof drug.label === 'string') push(drug.label);
+    if (Array.isArray(drug.aliases)) drug.aliases.forEach(push);
+    if (Array.isArray(drug.synonyms)) drug.synonyms.forEach(push);
+    if (Array.isArray(drug.members)) drug.members.forEach(push);
+    if (Array.isArray(drug.matches)){
+      drug.matches.forEach(match=>{
+        if (match && typeof match === 'object'){
+          push(match.cluster);
+        }
+      });
+    }
+    if (Array.isArray(drug.avoid)) drug.avoid.forEach(push);
+    push(drug.notes);
+    push(drug.source);
+    if (typeof getDrugNormalizedNames === 'function'){
+      getDrugNormalizedNames(drug).forEach(name=>{
+        if (name) parts.push(name);
+      });
+    }
+    const haystack = normalizeSearchValue(parts.join(' '));
+    drug._searchHaystack = haystack;
+    return haystack;
+  };
+
+  const clearWarn = ()=>{ warnBox.style.display='none'; warnBox.textContent=''; };
+  const showWarn = msg=>{ warnBox.innerHTML=msg; warnBox.style.display='block'; };
+  const clearError = ()=>{ errorBox.style.display='none'; errorBox.textContent=''; };
+  const setLearnInfoVisible = (show)=>{
+    if (!learnInfoPopover) return;
+    if (show){
+      learnInfoPopover.classList.add('show');
+      learnInfoPopover.setAttribute('aria-hidden','false');
+      if (btnLearnInfo) btnLearnInfo.setAttribute('aria-expanded','true');
+      setTimeout(()=>{ if (btnLearnInfoClose) btnLearnInfoClose.focus(); }, 0);
+    } else {
+      learnInfoPopover.classList.remove('show');
+      learnInfoPopover.setAttribute('aria-hidden','true');
+      if (btnLearnInfo) btnLearnInfo.setAttribute('aria-expanded','false');
+    }
+  };
+  const showError  = msg=>{ errorBox.textContent=msg; errorBox.style.display='block'; };
+  const showToast = (msg,kind='mid',duration=1600)=>{
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast show '+(kind==='ok'?'ok':kind==='bad'?'bad':'mid');
+    if (toastTimer){
+      clearTimeout(toastTimer);
+    }
+    const ms = Math.max(600, Number(duration)||0);
+    toastTimer = setTimeout(()=>{
+      toast.className='toast';
+      toastTimer = null;
+    }, ms);
+  };
+
+  const updateClinicalLoaderStatus = (fileName)=>{
+    if (typeof fileName === 'string' && fileName.trim()){
+      clinicalLoadedFileName = fileName.trim();
+    }
+    if (!clinicalStatus) return;
+    if (clinicalDataLoaded){
+      const name = clinicalLoadedFileName || 'clinical.json';
+      clinicalStatus.textContent = `Caricato: ${name} — Casi: ${CASES.length} — Selezionabili: ${CLINICAL_SELECTABLES.length}`;
+      clinicalStatus.style.display = '';
+    } else {
+      clinicalStatus.textContent = '';
+      clinicalStatus.style.display = 'none';
+    }
+  };
+
+  const priorityBucket = p => (p>=3 ? 'top' : p===2 ? 'bene' : 'ok');
+
+  const clusterClass = name => name.startsWith('GP:') ? 'cluster-gp'
+                              : name.startsWith('GN:') ? 'cluster-gn'
+                              : 'cluster-ot';
+
+  const bugDrugClusterTagClass = name => {
+    if (!name) return '';
+    const trimmed = String(name).trim();
+    if (!trimmed) return '';
+    if (/^GP:/i.test(trimmed)) return 'tag-gp';
+    if (/^GN:/i.test(trimmed)) return 'tag-gn';
+    const normalized = trimmed
+      .replace(/[–—]/g, '-')
+      .replace(/\s*-\s*/g, ' - ')
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+    if (normalized.startsWith('curvi/atipici')) return 'tag-curvi';
+    if (normalized.startsWith('anaerobi - sopra diaframma')) return 'tag-ana-up';
+    if (normalized.startsWith('anaerobi - sotto diaframma')) return 'tag-ana-down';
+    return '';
+  };
+
+  const formatMultiline = txt => esc(txt||'').replace(/\n/g,'<br>');
+
+  const cleanString = value => typeof value === 'string' ? value.trim() : '';
+  const pickFirstString = arr => {
+    if (!Array.isArray(arr)) return '';
+    for (const value of arr){
+      if (typeof value === 'string'){
+        const trimmed = value.trim();
+        if (trimmed) return trimmed;
+      }
+    }
+    return '';
+  };
+  const normalizeStringList = arr => Array.isArray(arr)
+    ? arr.map(v=>cleanString(v)).filter(Boolean)
+    : [];
+
+  function normalizeClinicalSelectable(entry, idx){
+    if (!entry || typeof entry !== 'object'){
+      throw new Error(`selectables[${idx}] deve essere un oggetto.`);
+    }
+    const idRaw = entry.id ?? entry.key ?? entry.value;
+    if (idRaw===undefined || idRaw===null){
+      throw new Error(`selectables[${idx}] manca il campo "id".`);
+    }
+    const id = cleanString(String(idRaw));
+    if (!id){
+      throw new Error(`selectables[${idx}] ha un id vuoto.`);
+    }
+    const name = cleanString(entry.name) || cleanString(entry.label);
+    if (!name){
+      throw new Error(`selectables[${idx}] manca il campo "name".`);
+    }
+    const typeRaw = cleanString(entry.type).toLowerCase();
+    const type = typeRaw || 'drug';
+    const group = cleanString(entry.group) || 'Senza gruppo';
+    const subgroup = cleanString(entry.subgroup);
+    return {
+      ...entry,
+      id,
+      name,
+      type,
+      group,
+      subgroup: subgroup || null,
+      __lowerName: name.toLowerCase()
+    };
+  }
+
+  function normalizeClinicalMatchingEntry(entry){
+    if (entry===null || entry===undefined) return null;
+    if (typeof entry === 'string' || typeof entry === 'number'){
+      const id = cleanString(String(entry));
+      return id ? {id, type:null} : null;
+    }
+    if (typeof entry === 'object'){
+      const idRaw = entry.id ?? entry.selectable_id ?? entry.value ?? entry.key ?? entry.ref ?? null;
+      if (idRaw===undefined || idRaw===null){
+        const fallback = cleanString(entry.name);
+        return fallback ? {id:fallback, type: cleanString(entry.type)||null} : null;
+      }
+      const id = cleanString(String(idRaw));
+      if (!id) return null;
+      const type = cleanString(entry.type);
+      return {id, type: type||null};
+    }
+    return null;
+  }
+
+  function normalizeClinicalMatching(raw){
+    const source = (raw && typeof raw === 'object') ? raw : {};
+    const mode = cleanString(source.mode).toLowerCase() || 'set';
+    const essentials = Array.isArray(source.essentials)
+      ? source.essentials.map(normalizeClinicalMatchingEntry).filter(Boolean)
+      : [];
+    const extras = Array.isArray(source.extras)
+      ? source.extras.map(normalizeClinicalMatchingEntry).filter(Boolean)
+      : [];
+    const allowExtras = source.allow_extras === true;
+    return {mode, essentials, extras, allowExtras};
+  }
+
+  function normalizeClinicalRecommended(entry){
+    if (!entry || typeof entry !== 'object') return null;
+    const regimen = normalizeStringList(entry.regimen);
+    if (!regimen.length){
+      const single = cleanString(entry.regimen);
+      if (single) regimen.push(single);
+    }
+    const setting = cleanString(entry.setting);
+    const rationale = cleanString(entry.rationale);
+    const source = cleanString(entry.source);
+    if (!regimen.length && !setting && !rationale && !source) return null;
+    return {regimen, setting, rationale, source};
+  }
+
+  function normalizeClinicalCase(entry, idx){
+    if (!entry || typeof entry !== 'object'){
+      throw new Error(`cases[${idx}] deve essere un oggetto.`);
+    }
+    const title = cleanString(entry.title) || `Caso ${idx+1}`;
+    const vignette = typeof entry.vignette === 'string' ? entry.vignette : '';
+    const hints = normalizeStringList(entry.hints);
+    if (!hints.length){
+      const singleHint = cleanString(entry.hint);
+      if (singleHint) hints.push(singleHint);
+    }
+    const diagnosis = cleanString(entry.diagnosis) || cleanString(entry.displayDiagnosis);
+    const notes = normalizeStringList(entry.notes_on_completion);
+    const recommended = Array.isArray(entry.recommended)
+      ? entry.recommended.map(normalizeClinicalRecommended).filter(Boolean)
+      : [];
+    const matching = normalizeClinicalMatching(entry.matching);
+    return {
+      ...entry,
+      __title: title,
+      __vignette: vignette,
+      __hints: hints,
+      __diagnosis: diagnosis,
+      __notesOnCompletion: notes,
+      __recommended: recommended,
+      __matching: matching
+    };
+  }
+
+  function applyClinicalData(raw){
+    if (!raw || typeof raw !== 'object'){
+      throw new Error(CLINICAL_STRUCTURE_ERROR);
+    }
+    if (!Array.isArray(raw.selectables) || !Array.isArray(raw.cases)){
+      throw new Error(CLINICAL_STRUCTURE_ERROR);
+    }
+    const selectables = raw.selectables.map((entry, idx)=>normalizeClinicalSelectable(entry, idx));
+    CLINICAL_SELECTABLES = selectables;
+    CLINICAL_SELECTABLES_BY_ID.clear();
+    selectables.forEach(sel=>{ CLINICAL_SELECTABLES_BY_ID.set(sel.id, sel); });
+    const baseGroupOrder = Array.isArray(raw.group_order)
+      ? raw.group_order.map(group=>cleanString(group)).filter(Boolean)
+      : [];
+    const dedupGroupOrder = [];
+    const seenBaseGroups = new Set();
+    baseGroupOrder.forEach(group=>{
+      if (seenBaseGroups.has(group)) return;
+      seenBaseGroups.add(group);
+      dedupGroupOrder.push(group);
+    });
+    CLINICAL_GROUP_ORDER = dedupGroupOrder;
+    CLINICAL_SUBGROUP_ORDER.clear();
+    if (raw && raw.subgroup_order && typeof raw.subgroup_order === 'object'){
+      Object.entries(raw.subgroup_order).forEach(([groupName, list])=>{
+        const cleanGroup = cleanString(groupName);
+        if (!cleanGroup) return;
+        const order = Array.isArray(list)
+          ? list.map(name=>cleanString(name)).filter(Boolean)
+          : [];
+        if (!order.length) return;
+        const uniqueOrder = [];
+        const seen = new Set();
+        order.forEach(name=>{
+          if (seen.has(name)) return;
+          seen.add(name);
+          uniqueOrder.push(name);
+        });
+        if (uniqueOrder.length) CLINICAL_SUBGROUP_ORDER.set(cleanGroup, uniqueOrder);
+      });
+    }
+    const foundGroups = [];
+    const groupSeen = new Set();
+    const subgroupByGroup = new Map();
+    selectables.forEach(sel=>{
+      const group = sel.group || 'Senza gruppo';
+      if (!groupSeen.has(group)){
+        groupSeen.add(group);
+        foundGroups.push(group);
+      }
+      if (sel.subgroup){
+        if (!subgroupByGroup.has(group)) subgroupByGroup.set(group, []);
+        const arr = subgroupByGroup.get(group);
+        if (!arr.includes(sel.subgroup)) arr.push(sel.subgroup);
+      }
+    });
+    if (!CLINICAL_GROUP_ORDER.length){
+      CLINICAL_GROUP_ORDER = foundGroups.slice();
+    } else {
+      const seenOrder = new Set(CLINICAL_GROUP_ORDER);
+      foundGroups.forEach(group=>{
+        if (!seenOrder.has(group)){
+          CLINICAL_GROUP_ORDER.push(group);
+          seenOrder.add(group);
+        }
+      });
+    }
+    subgroupByGroup.forEach((subgroups, group)=>{
+      if (!subgroups.length) return;
+      if (CLINICAL_SUBGROUP_ORDER.has(group)){
+        const existing = CLINICAL_SUBGROUP_ORDER.get(group).slice();
+        const seenSubs = new Set(existing);
+        subgroups.forEach(name=>{
+          if (!seenSubs.has(name)){
+            existing.push(name);
+            seenSubs.add(name);
+          }
+        });
+        CLINICAL_SUBGROUP_ORDER.set(group, existing);
+      }
+    });
+    CASES = raw.cases.map((entry, idx)=>normalizeClinicalCase(entry, idx));
+    resetClinicalMatchingProgress();
+    currentCaseIdx = 0;
+    clinicalSelections.clear();
+    clinicalAutoFetchAttempted = true;
+    clinicalDataLoaded = true;
+    const missing = new Set();
+    CASES.forEach(cs=>{
+      const essentials = cs?.__matching?.essentials || [];
+      essentials.forEach(req=>{
+        if (req && req.id && !CLINICAL_SELECTABLES_BY_ID.has(req.id)){
+          missing.add(req.id);
+        }
+      });
+    });
+    clearWarn();
+    if (missing.size){
+      showWarn(`Elementi mancanti in selectables: ${Array.from(missing).map(name=>esc(name)).join(', ')}`);
+    }
+    updateClinicalLoaderStatus();
+  }
+
+  function ensureClinicalAutoLoad(){
+    if (clinicalAutoFetchAttempted || CLINICAL_SELECTABLES.length) return;
+    clinicalAutoFetchAttempted = true;
+    fetch('clinical.json')
+      .then(resp=>{ if (!resp.ok) throw new Error('Not found'); return resp.json(); })
+      .then(json=>{
+        try {
+          applyClinicalData(json);
+          showToast('clinical.json caricato','ok');
+          updateClinicalLoaderStatus('clinical.json');
+          renderByMode();
+        } catch(err){
+          console.error('Errore caricando clinical.json di default', err);
+        }
+      })
+      .catch(()=>{
+        // opzionale, nessun clinical.json predefinito
+      });
+  }
+
+  const getCurrentClinicalCase = ()=> CASES[currentCaseIdx] || null;
+  const filterClinicalSelectables = ()=>{
+    const query = (searchInput.value||'').toLowerCase().trim();
+    if (!query) return CLINICAL_SELECTABLES;
+    return CLINICAL_SELECTABLES.filter(sel=> sel.__lowerName.includes(query));
+  };
+
+  function getCaseClusterInfo(cs){
+    const essential = [];
+    const optional = [];
+    if (Array.isArray(cs?.essentialClusters)){
+      cs.essentialClusters.forEach(entry=>{
+        if (typeof entry === 'string') essential.push(entry);
+        else if (entry && entry.name) essential.push(entry.name);
+      });
+    }
+    if (Array.isArray(cs?.clusters)){
+      cs.clusters.forEach(entry=>{
+        if (typeof entry === 'string') essential.push(entry);
+        else if (entry && entry.name){
+          if (entry.essential===false) optional.push(entry.name);
+          else essential.push(entry.name);
+        }
+      });
+    }
+    if (Array.isArray(cs?.clusters_suggested)){
+      cs.clusters_suggested.forEach(entry=>{
+        if (typeof entry === 'string') optional.push(entry);
+        else if (entry && entry.name){
+          if (entry.essential) essential.push(entry.name);
+          else optional.push(entry.name);
+        }
+      });
+    }
+    const dedupe = list => list.filter((name, idx)=> name && list.indexOf(name)===idx);
+    const essentialList = dedupe(essential);
+    const optionalList = dedupe(optional.filter(name=>!essentialList.includes(name)));
+    const allOrdered = [...essentialList, ...optionalList];
+    const essentialSet = new Set(essentialList);
+    const optionalSet = new Set(optionalList);
+    const contraSet = new Set(Array.isArray(cs?.contra)?cs.contra.filter(Boolean):[]);
+    return {essential:essentialList, optional:optionalList, allOrdered, essentialSet, optionalSet, contraSet};
+  }
+
+  const normalizeTherapyName = name =>
+    typeof name === 'string'
+      ? name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+      : '';
+
+  function makeTherapySlot(entry){
+    const accepts = new Set();
+    let display = '';
+    let placeholder = '';
+    const addCandidate = str => {
+      if (typeof str !== 'string') return;
+      const trimmed = str.trim();
+      if (!trimmed) return;
+      const normalized = normalizeTherapyName(trimmed);
+      if (normalized) accepts.add(normalized);
+      const noParen = trimmed.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      const normalizedNoParen = normalizeTherapyName(noParen);
+      if (normalizedNoParen && normalizedNoParen !== normalized) accepts.add(normalizedNoParen);
+    };
+
+    if (typeof entry === 'string'){
+      display = entry;
+      addCandidate(entry);
+    } else if (Array.isArray(entry)){
+      entry.forEach((value, idx)=>{
+        if (typeof value !== 'string') return;
+        if (!display) display = value;
+        addCandidate(value);
+      });
+    } else if (entry && typeof entry === 'object'){
+      if (typeof entry.display === 'string') display = entry.display;
+      else if (typeof entry.label === 'string') display = entry.label;
+      else if (typeof entry.name === 'string') display = entry.name;
+      else if (typeof entry.drug === 'string') display = entry.drug;
+      if (typeof entry.placeholder === 'string') placeholder = entry.placeholder;
+      ['drug','name','label','display'].forEach(key=>{
+        if (typeof entry[key] === 'string') addCandidate(entry[key]);
+      });
+      if (Array.isArray(entry.accepts)) entry.accepts.forEach(addCandidate);
+      if (Array.isArray(entry.aliases)) entry.aliases.forEach(addCandidate);
+    }
+
+    if (!placeholder) placeholder = 'Slot vuoto';
+    if (!display) display = Array.from(accepts)[0] || '';
+    if (!accepts.size && display) addCandidate(display);
+    if (!accepts.size) return null;
+    expandAcceptsWithDrugAliases(accepts);
+    return {accepts, display, placeholder};
+  }
+
+  function normalizeTherapyDefinition(cs){
+    const therapy = cs?.therapy;
+    if (!therapy) return null;
+    const entries = Array.isArray(therapy.required)
+      ? therapy.required
+      : Array.isArray(therapy.slots)
+        ? therapy.slots
+        : null;
+    if (!entries) return null;
+    const slots = entries.map(makeTherapySlot).filter(slot=>slot && slot.accepts.size>0);
+    if (!slots.length) return null;
+    return {slots};
+  }
+
+  function getDrugRowByName(name){
+    if (typeof name !== 'string') return null;
+    return DRUGS_BY_NAME.get(name) || null;
+  }
+
+  function normalizeDrugName(value){
+    return normalizeTherapyName(value);
+  }
+
+  function computeDrugClassMembers(drug){
+    const members = [];
+    if (!drug) return members;
+    const pushMember = raw => {
+      if (typeof raw !== 'string') return;
+      const trimmed = raw.trim();
+      if (trimmed) members.push(trimmed);
+    };
+    if (Array.isArray(drug.members)) drug.members.forEach(pushMember);
+    if (!members.length && typeof drug.drug === 'string'){
+      const match = drug.drug.match(/\(([^)]+)\)/);
+      if (match && match[1]){
+        match[1].split(/[\/;,]/).forEach(pushMember);
+      }
+    }
+    return members.filter((name, idx, arr)=> arr.indexOf(name)===idx);
+  }
+
+  function computeDrugNameVariants(drug){
+    const variants = new Set();
+    if (!drug) return variants;
+    const add = raw => {
+      if (typeof raw !== 'string') return;
+      const normalized = normalizeDrugName(raw);
+      if (normalized) variants.add(normalized);
+    };
+    add(drug.drug);
+    if (typeof drug.name === 'string') add(drug.name);
+    if (typeof drug.label === 'string') add(drug.label);
+    if (Array.isArray(drug.aliases)) drug.aliases.forEach(add);
+    if (Array.isArray(drug.synonyms)) drug.synonyms.forEach(add);
+    if (Array.isArray(drug.accepts)) drug.accepts.forEach(add);
+    return variants;
+  }
+
+  function rebuildDrugNameIndex(){
+    DRUGS_BY_NAME.clear();
+    DRUG_NAME_INDEX.clear();
+    DRUGS.forEach(drug=>{
+      DRUGS_BY_NAME.set(drug.drug, drug);
+      const variants = computeDrugNameVariants(drug);
+      const members = computeDrugClassMembers(drug);
+      drug._normalizedNames = variants;
+      drug._classMembers = members;
+      drug._normalizedClassMembers = new Set(members.map(normalizeDrugName).filter(Boolean));
+      variants.forEach(name=>{
+        if (!DRUG_NAME_INDEX.has(name)) DRUG_NAME_INDEX.set(name, []);
+        DRUG_NAME_INDEX.get(name).push(drug);
+      });
+    });
+  }
+
+  function getDrugNormalizedNames(drug){
+    if (!drug) return new Set();
+    if (drug._normalizedNames instanceof Set) return drug._normalizedNames;
+    const variants = computeDrugNameVariants(drug);
+    drug._normalizedNames = variants;
+    return variants;
+  }
+
+  function getDrugNormalizedClassMembers(drug){
+    if (!drug) return new Set();
+    if (drug._normalizedClassMembers instanceof Set) return drug._normalizedClassMembers;
+    const members = computeDrugClassMembers(drug);
+    drug._classMembers = members;
+    const normalized = new Set(members.map(normalizeDrugName).filter(Boolean));
+    drug._normalizedClassMembers = normalized;
+    return normalized;
+  }
+
+  function expandAcceptsWithDrugAliases(set){
+    if (!(set instanceof Set) || set.size===0) return;
+    const additions = [];
+    set.forEach(name=>{
+      const matches = DRUG_NAME_INDEX.get(name);
+      if (!matches) return;
+      matches.forEach(drug=>{
+        getDrugNormalizedNames(drug).forEach(alias=>{ additions.push(alias); });
+        getDrugNormalizedClassMembers(drug).forEach(member=>{ additions.push(member); });
+      });
+    });
+    additions.forEach(name=> set.add(name));
+  }
+
+  function slotIntersectsDrug(slot, drug){
+    if (!slot || !drug) return false;
+    const variants = getDrugNormalizedNames(drug);
+    if (!slot.accepts || !slot.accepts.size || !variants.size) return false;
+    for (const name of variants){
+      if (slot.accepts.has(name)) return true;
+    }
+    return false;
+  }
+
+  const caseKeyForTherapy = cs => {
+    if (!cs) return null;
+    return cs.id || cs.title || `index:${currentCaseIdx}`;
+  };
+
+  function ensureTherapyState(cs){
+    const key = caseKeyForTherapy(cs);
+    if (!key){
+      therapyState.caseKey = null;
+      therapyState.definition = null;
+      therapyState.selections.clear();
+      therapyState.locked = false;
+      return null;
+    }
+    if (therapyState.caseKey !== key){
+      therapyState.caseKey = key;
+      therapyState.definition = normalizeTherapyDefinition(cs);
+      therapyState.selections.clear();
+      therapyState.locked = false;
+    } else if (!therapyState.definition){
+      therapyState.definition = normalizeTherapyDefinition(cs);
+    }
+    return therapyState.definition;
+  }
+
+  function forceResetTherapyState(){
+    therapyState.caseKey = null;
+    therapyState.definition = null;
+    therapyState.selections.clear();
+    therapyState.locked = false;
+    clinicalSelections.clear();
+    resetClinicalMatchingProgress();
+  }
+
+  function assignTherapySlots(slots, selections){
+    const used = new Set();
+    const order = Array.from(selections.keys());
+    return slots.map(slot=>{
+      let match = null;
+      for (const name of order){
+        const row = getDrugRowByName(name);
+        const variants = row ? Array.from(getDrugNormalizedNames(row)) : (()=>{
+          const single = normalizeDrugName(name);
+          return single ? [single] : [];
+        })();
+        if (variants.some(v=>used.has(v))) continue;
+        if (variants.some(v=>slot.accepts.has(v))){
+          match = name;
+          variants.forEach(v=>used.add(v));
+          break;
+        }
+      }
+      return match;
+    });
+  }
+
+  function formatTherapySlotFilled(slot, drugName){
+    const normalizedDisplay = normalizeTherapyName(slot.display||'');
+    const normalizedDrug = normalizeTherapyName(drugName);
+    if (slot.display && normalizedDisplay){
+      if ((slot.accepts && slot.accepts.has(normalizedDisplay)) || normalizedDisplay.includes(normalizedDrug)){
+        return `✅ ${esc(slot.display)}`;
+      }
+      return `✅ ${esc(drugName)} (${esc(slot.display)})`;
+    }
+    return `✅ ${esc(drugName)}`;
+  }
+
+  function evaluateClinicalCase(cs, selectionOrder){
+    if (!cs) return {solved:false, missing:[], matching:null};
+    const matching = cs.__matching || {mode:'set', essentials:[], allowExtras:false};
+    const essentials = Array.isArray(matching.essentials) ? matching.essentials : [];
+    const selections = Array.isArray(selectionOrder) ? selectionOrder.map(id=>String(id)) : [];
+    const selectionSet = new Set(selections);
+    const missing = essentials.filter(req=> req && req.id && !selectionSet.has(req.id));
+    const mode = matching.mode || 'set';
+    let solved = false;
+    if (mode === 'set'){
+      solved = missing.length===0 && essentials.length>0;
+    } else {
+      const expected = essentials.map(req=>req.id).filter(Boolean);
+      solved = expected.every((id, idx)=> selections[idx]===id);
+      if (matching.allowExtras===false && selections.length!==expected.length){
+        solved = false;
+      }
+      if (!expected.length) solved = false;
+    }
+    return {solved, missing, matching};
+  }
+
+  function updateClinicalSelectionSummary(){
+    if (MODE!=='clinical') return;
+    const state = clinicalMatchProgress;
+    const slots = state.slots || [];
+    const listEl = state.listEl;
+    if (listEl && slots.length){
+      slots.forEach(slot=>{
+        const el = slot.element;
+        if (!el) return;
+        if (slot.filled){
+          el.classList.remove('empty');
+          el.classList.add('filled','locked');
+          if (slot.labelEl) slot.labelEl.textContent = slot.displayName || slot.requiredId;
+        } else {
+          el.classList.remove('filled','locked');
+          el.classList.add('empty');
+          if (slot.labelEl) slot.labelEl.textContent = '';
+        }
+      });
+    }
+    const solved = slots.length>0 && slots.every(slot=>slot.filled);
+    state.solved = solved;
+    const expectedSelections = slots.filter(slot=>slot.filled && slot.matchedId).map(slot=>slot.matchedId);
+    state.filledIds = new Set(expectedSelections);
+    const currentSelections = Array.from(clinicalSelections);
+    if (expectedSelections.length!==currentSelections.length || expectedSelections.some((id,idx)=>currentSelections[idx]!==id)){
+      clinicalSelections.clear();
+      expectedSelections.forEach(id=> clinicalSelections.add(id));
+    }
+    if (state.bannerEl){
+      state.bannerEl.style.display = solved ? '' : 'none';
+    }
+    if (state.notesEl){
+      if (solved){
+        const notes = Array.isArray(state.notes) ? state.notes : [];
+        if (notes.length){
+          state.notesEl.innerHTML = `<ul>${notes.map(note=>`<li>${formatMultiline(note)}</li>`).join('')}</ul>`;
+          state.notesEl.style.display = 'block';
+        } else {
+          state.notesEl.innerHTML = '';
+          state.notesEl.style.display = 'none';
+        }
+      } else {
+        state.notesEl.innerHTML = '';
+        state.notesEl.style.display = 'none';
+      }
+    }
+  }
+
+  function syncClinicalSelectionUI(){
+    if (MODE!=='clinical') return;
+    rightList.querySelectorAll('.item[data-selectable-id]').forEach(el=>{
+      const id = el.dataset.selectableId;
+      if (id && clinicalSelections.has(id)){
+        el.classList.add('matched');
+      } else {
+        el.classList.remove('matched');
+      }
+    });
+  }
+
+  function updateClinicalUI(){
+    if (MODE!=='clinical') return;
+    updateClinicalSelectionSummary();
+    syncClinicalSelectionUI();
+  }
+
+  function toggleClinicalSelection(id){
+    if (MODE!=='clinical') return;
+    const key = String(id);
+    if (!key) return;
+    const cs = getCurrentClinicalCase();
+    if (!cs) return;
+    const caseKey = caseKeyForTherapy(cs);
+    if (clinicalMatchProgress.key !== caseKey){
+      setupClinicalSlotsPanel(cs);
+    }
+    if (clinicalMatchProgress.mode === 'set'){
+      if (clinicalMatchProgress.solved){
+        showClinicalErrorOverlay('❌ Farmaco errato!');
+        return;
+      }
+      if (clinicalMatchProgress.filledIds.has(key)){
+        showClinicalErrorOverlay('❌ Farmaco errato!');
+        return;
+      }
+      const slot = clinicalMatchProgress.slots.find(s=>s.requiredId===key && !s.filled);
+      if (slot){
+        slot.filled = true;
+        slot.matchedId = key;
+        const sel = CLINICAL_SELECTABLES_BY_ID.get(key);
+        slot.displayName = sel ? sel.name : key;
+        clinicalMatchProgress.filledIds.add(key);
+        updateClinicalUI();
+        return;
+      }
+      showClinicalErrorOverlay('❌ Farmaco errato!');
+      if (clinicalMatchProgress.allowExtras && clinicalMatchProgress.listEl){
+        // extras opzionali: nessuna azione aggiuntiva richiesta
+      }
+      return;
+    }
+    if (clinicalSelections.has(key)) clinicalSelections.delete(key);
+    else clinicalSelections.add(key);
+    updateClinicalUI();
+  }
+
+  function changeClinicalCase(delta){
+    if (!CASES.length) return false;
+    currentCaseIdx = (currentCaseIdx + delta + CASES.length) % CASES.length;
+    clinicalSelections.clear();
+    resetClinicalMatchingProgress();
+    renderByMode();
+    return true;
+  }
+
+  function shuffleClinicalCasesInPlace(){
+    if (!CASES.length) return false;
+    CASES = shuffle(CASES);
+    currentCaseIdx = 0;
+    clinicalSelections.clear();
+    resetClinicalMatchingProgress();
+    renderByMode();
+    return true;
+  }
+
+  function wireClinicalCaseButtons(){
+    const hasCases = CASES.length>0;
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnShuffleCase = document.getElementById('btnShuffleCase');
+    const btnShowHint = document.getElementById('btnShowHint');
+    const btnShowDiagnosis = document.getElementById('btnShowDiagnosis');
+    const btnShowFullSolution = document.getElementById('btnShowFullSolution');
+
+    if (btnPrev) btnPrev.onclick = ()=>{ if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; } changeClinicalCase(-1); };
+    if (btnNext) btnNext.onclick = ()=>{ if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; } changeClinicalCase(1); };
+    if (btnShuffleCase) btnShuffleCase.onclick = ()=>{
+      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      if (shuffleClinicalCasesInPlace()) showToast('Casi rimescolati','mid');
+    };
+    if (btnShowHint) btnShowHint.onclick = ()=>{
+      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      showCaseHint(getCurrentClinicalCase());
+    };
+    if (btnShowDiagnosis) btnShowDiagnosis.onclick = ()=>{
+      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      showCaseDiagnosis(getCurrentClinicalCase());
+    };
+    if (btnShowFullSolution) btnShowFullSolution.onclick = ()=>{
+      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      showCaseFullSolution(getCurrentClinicalCase());
+    };
+  }
+
+  function analyzeDrugAgainstCase(drugRow, cs, info){
+    if (!drugRow || !cs) return {category:'NON', reason:'Dati mancanti', clusters:[], missing:[], contra:[]};
+    const clusterInfo = info||getCaseClusterInfo(cs);
+    const matches = Array.isArray(drugRow.matches)?drugRow.matches:[];
+    const best = new Map();
+    matches.forEach(m=>{
+      if (!m || m.covers!==true || !m.cluster) return;
+      const p = Number(m.priority||1);
+      const prev = best.get(m.cluster)||0;
+      if (p>prev) best.set(m.cluster,p);
+    });
+    const relevant = [];
+    clusterInfo.allOrdered.forEach(cluster=>{
+      const p = best.get(cluster);
+      if (p){
+        relevant.push({name:cluster, priority:p, essential:clusterInfo.essentialSet.has(cluster)});
+      }
+    });
+    const missingEssentials = clusterInfo.essential.filter(cluster=>!best.has(cluster));
+    const drugContraArr = [];
+    if (Array.isArray(drugRow.avoid)) drugContraArr.push(...drugRow.avoid);
+    if (Array.isArray(drugRow.contra)) drugContraArr.push(...drugRow.contra);
+    const drugContraSet = new Set(drugContraArr.filter(Boolean));
+    const contraHits = [];
+    drugContraSet.forEach(cluster=>{
+      if (clusterInfo.allOrdered.includes(cluster) || clusterInfo.contraSet.has(cluster)) contraHits.push(cluster);
+    });
+    if (clusterInfo.contraSet.has(drugRow.drug)) contraHits.push(drugRow.drug);
+    let category = 'NON';
+    let reason = '';
+    if (missingEssentials.length>0){
+      reason = 'Manca: '+missingEssentials.join(', ');
+    } else if (contraHits.length>0){
+      reason = 'Controindicazione: '+contraHits.join(', ');
+    } else if (!clusterInfo.allOrdered.length && !relevant.length){
+      reason = 'Nessun cluster definito per il caso';
+    } else if (!relevant.length){
+      reason = 'Nessuna copertura rilevante';
+    } else {
+      let score = 0;
+      if (clusterInfo.essential.length){
+        score = clusterInfo.essential.reduce((min, cluster)=>{
+          const p = best.get(cluster)||0;
+          return (!p || p<min) ? p : min;
+        }, 99);
+      } else {
+        score = relevant.reduce((max, entry)=>Math.max(max, entry.priority), 0);
+      }
+      if (score>=3) category='TOP';
+      else if (score===2) category='BENE';
+      else if (score===1) category='OK';
+      else {
+        category='NON';
+        reason = 'Copertura insufficiente';
+      }
+    }
+    return {category, reason, clusters:relevant, missing:missingEssentials, contra:contraHits, info:clusterInfo};
+  }
+
+  const formatCompatCluster = entry => (
+    esc(entry.name) +
+    (entry.essential ? ' ⭐' : '') +
+    (entry.priority ? ` (P${entry.priority})` : '')
+  );
+
+  const isPositive = status => status === 'TOP' || status === 'BENE' || status === 'OK';
+
+  function triggerFlash(el){
+    if (!el) return;
+    el.classList.remove('flash-ok');
+    void el.offsetWidth;
+    el.classList.add('flash-ok');
+    const removeFlash = ()=>{ el.classList.remove('flash-ok'); };
+    el.addEventListener('animationend', removeFlash, {once:true});
+    setTimeout(removeFlash, 1600);
+  }
+
+  function openModal(title, html){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = html;
+    modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+  backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+  /* ===== Caricamento file ===== */
+  fileDrugs.onchange = e => {
+    const f=e.target.files?.[0]; if(!f) return;
+    const r=new FileReader();
+    clearError(); clearWarn();
+    r.onerror=()=>showError('Impossibile leggere il file farmaci.');
+    r.onload=()=>{ try{
+      const json=JSON.parse(r.result);
+      if(!Array.isArray(json)) throw new Error('File farmaci: atteso un array.');
+      DRUGS=json;
+      rebuildDrugNameIndex();
+      buildCounters();
+      prepareFilters();
+      forceResetTherapyState();
+      renderByMode();
+      showToast('Farmaci caricati','ok');
+    } catch(err){ showError('Errore farmaci: '+(err.message||err)); } };
+    r.readAsText(f,'utf-8');
+  };
+
+  if (btnLoadClinical){
+    btnLoadClinical.addEventListener('click', ()=>{
+      if (fileCases){
+        fileCases.value = '';
+        fileCases.click();
+      }
+    });
+  }
+
+  fileCases.onchange = e => {
+    const f=e.target.files?.[0]; if(!f) return;
+    const r=new FileReader();
+    const fileName = f.name ? f.name.trim() || 'clinical.json' : 'clinical.json';
+    const wasLoaded = clinicalDataLoaded;
+    const previousName = clinicalLoadedFileName;
+    clearError(); clearWarn();
+    r.onerror=()=>{
+      clinicalDataLoaded = wasLoaded;
+      clinicalLoadedFileName = previousName;
+      updateClinicalLoaderStatus();
+      showError('Impossibile leggere il file clinical.');
+      fileCases.value = '';
+    };
+    r.onload=()=>{
+      try{
+        const json=JSON.parse(r.result);
+        applyClinicalData(json);
+        updateClinicalLoaderStatus(fileName);
+        renderByMode();
+        showToast('clinical.json caricato','ok');
+      } catch(err){
+        clinicalDataLoaded = wasLoaded;
+        clinicalLoadedFileName = previousName;
+        updateClinicalLoaderStatus();
+        const msg = (err && err.message === CLINICAL_STRUCTURE_ERROR)
+          ? CLINICAL_STRUCTURE_ERROR
+          : 'Errore clinical: '+(err && err.message ? err.message : err);
+        showError(msg);
+      } finally {
+        fileCases.value = '';
+      }
+    };
+    r.readAsText(f,'utf-8');
+  };
+
+  function buildCounters(){
+    rebuildDrugNameIndex();
+    countersInit.clear(); countersHit.clear(); lockedDrugs.clear();
+    for (const d of DRUGS){
+      const init = {top:new Set(), bene:new Set(), ok:new Set()};
+      const best = new Map(); // cluster -> maxP (solo covers:true)
+      (d.matches||[]).forEach(m=>{
+        if (m.covers===true){
+          const prev = best.get(m.cluster)||0;
+          best.set(m.cluster, Math.max(prev, Number(m.priority||1)));
+        }
+      });
+      for (const [cluster,p] of best){
+        init[priorityBucket(p)].add(cluster);
+      }
+      countersInit.set(d.drug, init);
+      countersHit.set(d.drug, {top:new Set(), bene:new Set(), ok:new Set()});
+    }
+  }
+  function remainingCounters(drug){
+    const i = countersInit.get(drug); const h = countersHit.get(drug);
+    if (!i || !h) return {top:0,bene:0,ok:0};
+    return { top:Math.max(0,i.top.size-h.top.size),
+             bene:Math.max(0,i.bene.size-h.bene.size),
+             ok:Math.max(0,i.ok.size-h.ok.size) };
+  }
+  function markMatched(drug, cluster){
+    const init = countersInit.get(drug); if(!init) return;
+    const hit  = countersHit.get(drug);
+    if (init.top.has(cluster))  hit.top.add(cluster);
+    else if (init.bene.has(cluster)) hit.bene.add(cluster);
+    else if (init.ok.has(cluster))   hit.ok.add(cluster);
+  }
+  function isDrugCompleted(drug){
+    const r = remainingCounters(drug);
+    return r.top===0 && r.bene===0 && r.ok===0;
+  }
+
+  /* ===== Filtri ===== */
+  [searchInput, filterCategory, filterCluster].forEach(el=>el.addEventListener('input', ()=>renderByMode()));
+
+  function prepareFilters(){
+    // Filtro categoria: usa i 12 gruppi fissi
+    filterCategory.innerHTML =
+      `<option value="">Categoria farmaco: tutte</option>` +
+      AB_GROUPS_ORDER.map(g=>`<option>${esc(g)}</option>`).join('');
+
+    // Filtro cluster: dinamico (dai dati + default)
+    const found = new Set(DEFAULT_CLUSTERS);
+    DRUGS.forEach(r => (r.matches||[]).forEach(m => found.add(m.cluster)));
+    filterCluster.innerHTML =
+      `<option value="">Cluster: tutti</option>` +
+      Array.from(found).sort((a,b)=>a.localeCompare(b)).map(c=>`<option>${esc(c)}</option>`).join('');
+  }
+
+  function filterDrugsForList(){
+    const rawQuery = searchInput ? searchInput.value || '' : '';
+    bugDrugSearchQuery = normalizeSearchValue(rawQuery);
+    bugDrugSearchMatches.clear();
+    const selectedBucket = filterCategory.value || '';
+    const rows = DRUGS.filter(r=>{
+      if (selectedBucket && bucketAntibiotic(r.category)!==selectedBucket) return false;
+      if (bugDrugSearchQuery){
+        const hay = getDrugSearchHaystack(r);
+        if (!hay.includes(bugDrugSearchQuery)) return false;
+        bugDrugSearchMatches.add(r.drug);
+      }
+      return true;
+    });
+    if (!bugDrugSearchQuery){
+      bugDrugSearchMatches.clear();
+    }
+    return rows;
+  }
+
+  /* ===== Modalità ===== */
+  modeSelect.onchange = ()=>{ MODE = modeSelect.value; renderByMode(); };
+
+  function renderByMode(){
+    if (rootContainer){
+      rootContainer.classList.toggle('mode-clinica', MODE==='clinical');
+      rootContainer.classList.toggle('mode-bugdrug', MODE==='covers');
+      rootContainer.classList.toggle('mode-impara', MODE==='learn');
+    }
+    if (MODE!=='learn'){
+      setLearnInfoVisible(false);
+    }
+    if (MODE==='clinical'){
+      if (clinicalLoader) clinicalLoader.style.display = 'flex';
+      if (fileDrugs) fileDrugs.style.display = 'none';
+      updateClinicalLoaderStatus();
+    } else {
+      if (clinicalLoader) clinicalLoader.style.display = 'none';
+      if (fileDrugs) fileDrugs.style.display = '';
+    }
+    board.className = (MODE==='learn') ? 'board' : 'board two';
+    if (MODE==='clinical'){
+      filterCategory.disabled = true;
+      filterCluster.disabled = true;
+      ensureClinicalAutoLoad();
+      leftTitle.textContent='Caso clinico';
+      rightTitle.textContent='Selezionabili';
+      renderCaseLeft();
+      renderClinicalSelectablesAccordion();
+      updateClinicalUI();
+    } else if (MODE==='learn'){
+      filterCategory.disabled = false;
+      filterCluster.disabled = false;
+      forceResetTherapyState();
+      leftTitle.textContent='Impara — Farmaci'; rightTitle.textContent=''; rightList.innerHTML='';
+      renderLearnTable();
+    } else { // covers
+      filterCategory.disabled = false;
+      filterCluster.disabled = false;
+      forceResetTherapyState();
+      leftTitle.textContent='Farmaci (raggruppati)'; rightTitle.textContent='Cluster';
+      renderDrugsAccordionLeft_ABGroups(); renderClustersRight();
+    }
+  }
+
+  /* ===== Copre ===== */
+  function drugItemHTML(r, withCounters, isSearchHit=false){
+    const rem = remainingCounters(r.drug);
+    const cnts = (withCounters)
+      ? `<div class="counters">
+           <span class="cnt top" title="TOP rimanenti">TOP ${rem.top}</span>
+           <span class="cnt bene" title="BENE rimanenti">BENE ${rem.bene}</span>
+           <span class="cnt ok" title="OK rimanenti">OK ${rem.ok}</span>
+         </div>`
+      : '';
+    const classes = ['item'];
+    if (MODE==='covers' && isDrugCompleted(r.drug)) classes.push('locked');
+    if (isSearchHit) classes.push('search-hit');
+    return `<div class="${classes.join(' ')}" data-drug="${esc(r.drug)}" tabindex="0">
+      <div class="title">${esc(r.drug)}</div>
+      ${cnts}
+      <div class="info" data-solv-drug="${esc(r.drug)}">ⓘ</div>
+    </div>`;
+  }
+
+  function renderDrugsAccordionLeft_ABGroups(){
+    const rows = filterDrugsForList();
+    const queryActive = !!bugDrugSearchQuery;
+    if (!rows.length){
+      if (!DRUGS.length){
+        leftList.innerHTML = `<div class="item" style="pointer-events:none">Carica i farmaci per iniziare.</div>`;
+      } else if (queryActive){
+        leftList.innerHTML = `<div class="item" style="pointer-events:none">Nessun risultato.</div>`;
+      } else {
+        leftList.innerHTML = `<div class="item" style="pointer-events:none">Nessun elemento da mostrare.</div>`;
+      }
+      return;
+    }
+
+    const buckets = new Map(AB_GROUPS_ORDER.map(g=>[g,[]]));
+    rows.forEach(r=>{
+      const bucket = bucketAntibiotic(r.category);
+      if (!buckets.has(bucket)) buckets.set(bucket, []);
+      buckets.get(bucket).push(r);
+    });
+
+    const html = AB_GROUPS_ORDER.map(g=>{
+      const items = buckets.get(g)||[];
+      const groupHasMatches = queryActive && items.some(r=>bugDrugSearchMatches.has(r.drug));
+      const detailsClasses = groupHasMatches ? ' class="has-search-hit"' : '';
+      const shouldOpen = queryActive ? groupHasMatches : g==='β-lattamici';
+      const openAttr = shouldOpen ? ' open' : '';
+      const inner = items.length
+        ? items.map(r=>drugItemHTML(r, MODE==='covers', queryActive && bugDrugSearchMatches.has(r.drug))).join('')
+        : `<div class="item" style="pointer-events:none">—</div>`;
+      return `<details${detailsClasses}${openAttr}><summary>${esc(g)}</summary><div class="group">${inner}</div></details>`;
+    }).join('');
+
+    leftList.innerHTML = html || `<div class="item" style="pointer-events:none">Carica i farmaci per iniziare.</div>`;
+
+    leftList.querySelectorAll('.item[data-drug]').forEach(el=>{
+      el.addEventListener('click', (e)=>{ if(e.target.classList.contains('info')) return; selectDrug(el.dataset.drug, el); });
+      el.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && !e.target.classList.contains('info')){ selectDrug(el.dataset.drug, el); e.preventDefault(); }});
+    });
+    leftList.querySelectorAll('.info[data-solv-drug]').forEach(el=>{
+      el.addEventListener('click', ()=> showDrugSolution(el.dataset.solvDrug));
+    });
+  }
+
+  function renderClustersRight(){
+    const filter = (filterCluster.value||'').toLowerCase();
+    const clusters = DEFAULT_CLUSTERS.filter(c => !filter || c.toLowerCase().includes(filter));
+    rightList.innerHTML = clusters.map(c=>{
+      const tagClass = bugDrugClusterTagClass(c);
+      const classes = ['item', 'cluster-card', clusterClass(c)];
+      if (tagClass) classes.push(tagClass);
+      return `<div class="${classes.join(' ')}" data-cluster="${esc(c)}" tabindex="0">
+        <div class="title">${esc(c)}</div>
+        <div class="info" data-solv-cluster="${esc(c)}">ⓘ</div>
+      </div>`;
+    }).join('');
+    rightList.querySelectorAll('.item').forEach(el=>{
+      el.addEventListener('click', (e)=>{ if(e.target.classList.contains('info')) return; selectCluster(el.dataset.cluster, el); });
+      el.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && !e.target.classList.contains('info')){ selectCluster(el.dataset.cluster, el); e.preventDefault(); }});
+    });
+    rightList.querySelectorAll('.info[data-solv-cluster]').forEach(el=>{
+      el.addEventListener('click', ()=> showClusterSolution(el.dataset.solvCluster));
+    });
+  }
+
+  let pendingDrug=null, pendingDrugEl=null, pendingCluster=null, pendingClusterEl=null;
+
+  function selectDrug(drug, el){
+    if (pendingDrugEl) pendingDrugEl.classList.remove('selected');
+    pendingDrug=drug; pendingDrugEl=el; el.classList.add('selected');
+    tryResolve();
+  }
+  function selectCluster(cluster, el){
+    if (pendingClusterEl) pendingClusterEl.classList.remove('selected');
+    pendingCluster=cluster; pendingClusterEl=el; el.classList.add('selected');
+    tryResolve();
+  }
+
+  function tryResolve(){
+    if (!pendingDrug || !pendingCluster) return;
+
+    const row = getDrugRowByName(pendingDrug);
+    const links=(row&&row.matches)||[];
+    const coverHit = links
+      .filter(m=>m.cluster===pendingCluster && m.covers===true)
+      .sort((a,b)=>Number(b.priority||1)-Number(a.priority||1))[0]; // migliore priorità
+
+    // not_covers rimane dormiente — la UI non lo usa
+
+    if (coverHit){
+      // contatori + feedback per priorità
+      markMatched(pendingDrug, pendingCluster);
+      updateDrugCounters(pendingDrug);
+      const p = Number(coverHit.priority||1);
+      const status = (p>=3) ? 'TOP' : (p===2) ? 'BENE' : 'OK';
+      const msg = status==='TOP' ? '🏆 TOP' : status==='BENE' ? '👍 BENE' : '✅ OK';
+      showToast(msg,'ok');
+
+      if (MODE==='covers' && pendingDrugEl){
+        triggerFlash(pendingDrugEl);
+      }
+      if (MODE==='covers' && pendingClusterEl && isPositive(status)){
+        triggerFlash(pendingClusterEl);
+      }
+
+      pendingDrugEl.classList.add('matched');
+      pendingClusterEl.classList.add('matched');
+
+      if (isDrugCompleted(pendingDrug)){
+        lockedDrugs.add(pendingDrug);
+        pendingDrugEl.classList.add('locked');
+      }
+    } else {
+      showToast('❌ Sbagliato','bad');
+    }
+
+    pendingDrugEl?.classList.remove('selected');
+    pendingClusterEl?.classList.remove('selected');
+    pendingDrug=pendingCluster=null; pendingDrugEl=pendingClusterEl=null;
+  }
+
+  function updateDrugCounters(drug){
+    const el = leftList.querySelector(`[data-drug="${CSS.escape(drug)}"]`);
+    if (!el) return;
+    const rem = remainingCounters(drug);
+    const cnt = el.querySelector('.counters');
+    if (cnt){
+      cnt.innerHTML = `
+        <span class="cnt top" title="TOP rimanenti">TOP ${rem.top}</span>
+        <span class="cnt bene" title="BENE rimanenti">BENE ${rem.bene}</span>
+        <span class="cnt ok" title="OK rimanenti">OK ${rem.ok}</span>
+      `;
+    }
+  }
+
+  /* ===== Soluzioni (icone ⓘ) ===== */
+  function showDrugSolution(name){
+    const d = getDrugRowByName(name);
+    if(!d){ openModal('Soluzione', '<div>Farmaco non trovato.</div>'); return; }
+    const best = new Map();
+    (d.matches||[]).forEach(m=>{
+      if (m.covers!==true) return;
+      const p = Number(m.priority||1);
+      const prev = best.get(m.cluster)||0;
+      if (p>prev) best.set(m.cluster,p);
+    });
+    const cov = Array.from(best.entries()).map(([c,p])=>({cluster:c,p}));
+    const ncv = (d.matches||[]).filter(m=>m.covers===false).map(m=>m.cluster);
+    const av  = d.avoid||[];
+    const html = `
+      <div><b>${esc(d.drug)}</b> <small>${esc(d.category||'')}</small></div>
+      <div style="margin-top:8px"><b>Copre:</b></div>
+      <div class="chips">${cov.map(x=>`<span class="chip">${esc(x.cluster)} (P${x.p})</span>`).join('')||'—'}</div>
+      ${ncv.length? `<div style="margin-top:8px"><b>Non copre (esplicito):</b></div><div class="chips">${ncv.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`:''}
+      ${av.length?  `<div style="margin-top:8px"><b>Avoid:</b></div><div class="chips">${av.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`:''}
+      ${d.notes? `<div style="margin-top:8px"><small>${esc(d.notes)}</small></div>`:''}
+      ${d.source? `<div style="margin-top:4px"><small>Fonte: ${esc(d.source)}</small></div>`:''}
+    `;
+    openModal('Soluzione — Farmaco', html);
+  }
+
+  function showClusterSolution(cluster){
+    const okDrugs = DRUGS.filter(d=> (d.matches||[]).some(m=>m.cluster===cluster && m.covers===true));
+    const badDrugs = DRUGS.filter(d=> (d.avoid||[]).includes(cluster) || (d.matches||[]).some(m=>m.cluster===cluster && m.covers===false));
+    const html = `
+      <div><b>${esc(cluster)}</b></div>
+      <div style="margin-top:10px"><b>Farmaci che coprono:</b></div>
+      <div class="chips">${okDrugs.map(d=>`<span class="chip">${esc(d.drug)}</span>`).join('')||'—'}</div>
+      <div style="margin-top:10px"><b>Farmaci “non copre” / avoid:</b></div>
+      <div class="chips">${badDrugs.map(d=>`<span class="chip">${esc(d.drug)}</span>`).join('')||'—'}</div>
+    `;
+    openModal('Soluzione — Cluster', html);
+  }
+
+  /* ===== Clinica ===== */
+  function renderCaseLeft(){
+    const cs = getCurrentClinicalCase();
+    if (cs){
+      leftList.innerHTML = renderCaseCard(cs);
+      wireClinicalCaseButtons();
+      setupClinicalSlotsPanel(cs);
+    } else {
+      leftList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica clinical.json” per avviare la modalità Clinica.</div>`;
+      resetClinicalMatchingProgress();
+    }
+  }
+  function renderCaseCard(cs){
+    return `<div class="item" style="cursor:default">
+      <div class="title">${esc(cs.__title||cs.title||'Caso')}</div>
+      <div class="case-vignette">${formatMultiline(cs.__vignette||cs.vignette||'')}</div>
+      <div class="case-actions">
+        <button class="btn" id="btnShowHint">💡 Hint</button>
+        <button class="btn" id="btnShowDiagnosis">🧩 Diagnosi</button>
+        <button class="btn" id="btnShowFullSolution">🧪 Soluzione</button>
+      </div>
+      <div class="case-actions">
+        <button class="btn" id="btnPrev">⏮️ Precedente</button>
+        <button class="btn" id="btnNext">⏭️ Successivo</button>
+        <button class="btn" id="btnShuffleCase">🔀 Reshuffle</button>
+      </div>
+      <div id="clin-slots">
+        <div id="clin-slots-banner" class="clin-slot-banner">✅ Terapia corretta</div>
+        <div id="clin-slot-list" class="clin-slot-list"></div>
+      </div>
+      <div id="clin-notes"></div>
+    </div>`;
+  }
+
+  function resetClinicalMatchingProgress(){
+    clinicalMatchProgress.key = null;
+    clinicalMatchProgress.mode = 'set';
+    clinicalMatchProgress.allowExtras = false;
+    clinicalMatchProgress.slots = [];
+    clinicalMatchProgress.filledIds = new Set();
+    clinicalMatchProgress.solved = false;
+    clinicalMatchProgress.notes = [];
+    clinicalMatchProgress.container = null;
+    clinicalMatchProgress.listEl = null;
+    clinicalMatchProgress.bannerEl = null;
+    clinicalMatchProgress.notesEl = null;
+  }
+
+  function createClinicalSlotElement(slot){
+    const el = document.createElement('div');
+    el.className = 'clin-slot empty';
+    el.dataset.requiredId = slot.requiredId;
+    const bullet = document.createElement('span');
+    bullet.className = 'clin-slot-bullet';
+    bullet.textContent = '•';
+    const label = document.createElement('span');
+    label.className = 'clin-slot-label';
+    label.textContent = '';
+    el.append(bullet, label);
+    slot.element = el;
+    slot.labelEl = label;
+    return el;
+  }
+
+  function setupClinicalSlotsPanel(cs){
+    if (!cs){
+      resetClinicalMatchingProgress();
+      return;
+    }
+    const key = caseKeyForTherapy(cs);
+    clinicalMatchProgress.key = key;
+    const matching = cs.__matching || {mode:'set', essentials:[], allowExtras:false};
+    const essentials = Array.isArray(matching.essentials) ? matching.essentials : [];
+    clinicalMatchProgress.mode = matching.mode || 'set';
+    clinicalMatchProgress.allowExtras = matching.allowExtras === true;
+    clinicalMatchProgress.notes = Array.isArray(cs.__notesOnCompletion) ? cs.__notesOnCompletion : [];
+    clinicalMatchProgress.filledIds = new Set();
+    clinicalMatchProgress.solved = false;
+    clinicalMatchProgress.slots = essentials.map(req=>{
+      const id = req && req.id ? String(req.id) : '';
+      if (!id) return null;
+      return {
+        requiredId: id,
+        type: req.type || 'drug',
+        filled: false,
+        matchedId: null,
+        displayName: '',
+        element: null,
+        labelEl: null
+      };
+    }).filter(Boolean);
+
+    const container = document.getElementById('clin-slots');
+    const listEl = document.getElementById('clin-slot-list');
+    const bannerEl = document.getElementById('clin-slots-banner');
+    const notesEl = document.getElementById('clin-notes');
+
+    clinicalMatchProgress.container = container;
+    clinicalMatchProgress.listEl = listEl;
+    clinicalMatchProgress.bannerEl = bannerEl;
+    clinicalMatchProgress.notesEl = notesEl;
+
+    if (bannerEl) bannerEl.style.display = 'none';
+    if (notesEl){
+      notesEl.innerHTML = '';
+      notesEl.style.display = 'none';
+    }
+    if (listEl){
+      if (!clinicalMatchProgress.slots.length){
+        listEl.innerHTML = `<div class="clin-slot-empty-message">Nessun essenziale definito.</div>`;
+      } else {
+        listEl.innerHTML = '';
+        clinicalMatchProgress.slots.forEach(slot=>{
+          const el = createClinicalSlotElement(slot);
+          listEl.appendChild(el);
+        });
+      }
+    }
+    clinicalSelections.clear();
+    updateClinicalSelectionSummary();
+  }
+
+  function showClinicalErrorOverlay(message){
+    showToast(message, 'bad', 2400);
+  }
+
+  function clinicalSelectableItemHTML(sel, options = {}){
+    if (!sel) return '';
+    const opts = options || {};
+    const selected = clinicalSelections.has(sel.id) ? ' matched' : '';
+    const typeLabel = sel.type==='class'
+      ? 'Classe'
+      : sel.type==='drug'
+        ? 'Farmaco'
+        : sel.type ? sel.type.charAt(0).toUpperCase()+sel.type.slice(1) : 'Opzione';
+    const metaParts = [typeLabel];
+    if (opts.includeSubgroup && sel.subgroup){
+      metaParts.push(sel.subgroup);
+    }
+    const subtitle = metaParts.filter(Boolean).map(part=>esc(part)).join(' • ');
+    const subtitleHtml = subtitle ? `<div class="subtitle">${subtitle}</div>` : '';
+    return `<div class="item${selected}" data-selectable-id="${esc(sel.id)}" tabindex="0">
+      <div class="title">${esc(sel.name)}</div>
+      ${subtitleHtml}
+    </div>`;
+  }
+
+  function renderClinicalSelectablesAccordion(){
+    if (!CLINICAL_SELECTABLES.length){
+      rightList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica clinical.json” per mostrare i selezionabili.</div>`;
+      return;
+    }
+    const items = filterClinicalSelectables();
+    if (!items.length){
+      rightList.innerHTML = `<div class="item" style="pointer-events:none">Nessun elemento trovato.</div>`;
+      return;
+    }
+    const groupsMap = new Map();
+    items.forEach(sel=>{
+      const group = sel.group || 'Senza gruppo';
+      if (!groupsMap.has(group)) groupsMap.set(group, []);
+      groupsMap.get(group).push(sel);
+    });
+    const groupsOrder = (()=>{
+      const order = CLINICAL_GROUP_ORDER.slice();
+      const seen = new Set(order);
+      groupsMap.forEach((_, group)=>{
+        if (!seen.has(group)){
+          order.push(group);
+          seen.add(group);
+        }
+      });
+      return order;
+    })();
+    let openFirst = true;
+    const html = groupsOrder.map(groupName=>{
+      const groupItems = groupsMap.get(groupName);
+      if (!groupItems || !groupItems.length) return '';
+      const subOrder = CLINICAL_SUBGROUP_ORDER.get(groupName) || [];
+      const useSubgroups = subOrder.length>0 && groupItems.some(sel=>!!sel.subgroup);
+      let body = '';
+      if (useSubgroups){
+        const subMap = new Map();
+        const noSubItems = [];
+        groupItems.forEach(sel=>{
+          if (sel.subgroup){
+            if (!subMap.has(sel.subgroup)) subMap.set(sel.subgroup, []);
+            subMap.get(sel.subgroup).push(sel);
+          } else {
+            noSubItems.push(sel);
+          }
+        });
+        const orderedSubgroups = subOrder.slice();
+        const seenSubs = new Set(orderedSubgroups);
+        subMap.forEach((_, key)=>{
+          if (!seenSubs.has(key)){
+            orderedSubgroups.push(key);
+            seenSubs.add(key);
+          }
+        });
+        const sections = orderedSubgroups.map(subName=>{
+          const list = subMap.get(subName);
+          if (!list || !list.length) return '';
+          const entries = list.map(sel=>clinicalSelectableItemHTML(sel)).join('');
+          return `<details class="clinical-subgroup"><summary>${esc(subName)}</summary><div class="clinical-subgroup-items">${entries}</div></details>`;
+        }).filter(Boolean);
+        if (noSubItems.length){
+          const entries = noSubItems.map(sel=>clinicalSelectableItemHTML(sel)).join('');
+          sections.unshift(`<div class="clinical-subgroup-items">${entries}</div>`);
+        }
+        body = sections.join('');
+        if (!body){
+          body = groupItems.map(sel=>clinicalSelectableItemHTML(sel)).join('');
+        }
+      } else {
+        body = groupItems.map(sel=>clinicalSelectableItemHTML(sel, {includeSubgroup:true})).join('');
+      }
+      const openAttr = openFirst ? ' open' : '';
+      openFirst = false;
+      return `<details class="clinical-group"${openAttr}><summary>${esc(groupName)}</summary><div class="group">${body}</div></details>`;
+    }).filter(Boolean).join('');
+    rightList.innerHTML = html || `<div class="item" style="pointer-events:none">Nessun elemento trovato.</div>`;
+
+    rightList.querySelectorAll('.item[data-selectable-id]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const id = el.dataset.selectableId;
+        if (!id) return;
+        toggleClinicalSelection(id);
+      });
+      el.addEventListener('keydown', e=>{
+        if (e.key==='Enter' || e.key===' '){
+          e.preventDefault();
+          el.click();
+        }
+      });
+    });
+  }
+
+  function scoreDrugAgainstCase(drugRow, cs){
+    const analysis = analyzeDrugAgainstCase(drugRow, cs);
+    const base = {status:analysis.category, reason:analysis.reason||'', details:analysis, acceptSelection:true};
+    if (analysis.category!=='NON') return base;
+
+    const definition = ensureTherapyState(cs);
+    const slots = definition?.slots || [];
+    const classMembersNorm = getDrugNormalizedClassMembers(drugRow);
+    if (!drugRow || !slots.length || !classMembersNorm.size){
+      return {status:'SBAGLIATO', reason:analysis.reason||'', details:analysis, acceptSelection:false, toastKind:'bad'};
+    }
+
+    for (const slot of slots){
+      if (!slot || !slot.accepts || !slot.accepts.size) continue;
+      if (!slotIntersectsDrug(slot, drugRow)) continue;
+      const members = drugRow._classMembers || [];
+      let suggestion = '';
+      let matchedMember = false;
+      const normalizedDisplay = normalizeDrugName(slot.display||'');
+      if (normalizedDisplay && classMembersNorm.has(normalizedDisplay) && slot.accepts.has(normalizedDisplay)){
+        suggestion = slot.display || members.find(Boolean) || '';
+        matchedMember = true;
+      }
+      if (!matchedMember){
+        for (const member of members){
+          const norm = normalizeDrugName(member);
+          if (slot.accepts.has(norm)){
+            suggestion = member;
+            matchedMember = true;
+            break;
+          }
+        }
+      }
+      if (!matchedMember) continue;
+      const toast = suggestion ? `✅ Classe ok. Scegli ${suggestion}.` : '✅ Classe ok, specifica la molecola.';
+      const reason = suggestion ? `Scegli ${suggestion}` : 'Specificare la molecola della classe.';
+      return {status:'OK', reason, details:analysis, acceptSelection:false, toastMessage:toast, toastKind:'mid'};
+    }
+
+    return {status:'SBAGLIATO', reason:analysis.reason||'', details:analysis, acceptSelection:false, toastKind:'bad'};
+  }
+
+  function showCaseDiagnosis(cs){
+    if (!cs){ showToast('Caso non disponibile','bad'); return; }
+    const diag = cs?.__diagnosis || cs?.displayDiagnosis || cs?.diagnosis || 'Diagnosi non disponibile.';
+    const html = `
+      <div><b>${esc(cs?.__title||cs?.title||'Caso')}</b></div>
+      <div style="margin-top:8px">${formatMultiline(diag)}</div>
+    `;
+    openModal('Diagnosi', html);
+  }
+
+  function showCaseHint(cs){
+    if (!cs){ showToast('Caso non disponibile','bad'); return; }
+    const hintText = (()=>{
+      const hints = Array.isArray(cs?.__hints) && cs.__hints.length ? cs.__hints : cs?.hints;
+      const first = pickFirstString(hints);
+      if (first) return first;
+      const fallback = cleanString(cs?.hint);
+      return fallback;
+    })();
+    if (hintText){
+      const html = `
+        <div><b>${esc(cs?.__title||cs?.title||'Caso')}</b></div>
+        <div style="margin-top:8px">${formatMultiline(hintText)}</div>
+      `;
+      openModal('Hint', html);
+    } else {
+      openModal('Hint', '<div>Nessun hint disponibile</div>');
+    }
+  }
+
+  function showCaseCompatibility(cs){
+    if (!DRUGS.length){ showToast('Carica i farmaci','bad'); return; }
+    const info = getCaseClusterInfo(cs);
+    const knownClusters = new Set();
+    DRUGS.forEach(d=> (d.matches||[]).forEach(m=>{ if (m && m.covers===true && m.cluster) knownClusters.add(m.cluster); }));
+    const missingClusters = info.allOrdered.filter(cluster=>cluster && !knownClusters.has(cluster));
+    if (missingClusters.length){
+      const key = cs.id || cs.title || 'case';
+      const signature = missingClusters.join('|');
+      if (warnedMissingClusters.get(key)!==signature){
+        console.warn('Cluster non mappati per il caso', key, missingClusters);
+        warnedMissingClusters.set(key, signature);
+      }
+    }
+    const groups = {TOP:[], BENE:[], OK:[], NON:[]};
+    DRUGS.forEach(drug=>{
+      const result = analyzeDrugAgainstCase(drug, cs, info);
+      (groups[result.category]||groups.NON).push({drug, result});
+    });
+    Object.keys(groups).forEach(key=>{
+      groups[key].sort((a,b)=>a.drug.drug.localeCompare(b.drug.drug));
+    });
+    const sections = [
+      {key:'TOP', label:'TOP'},
+      {key:'BENE', label:'BENE'},
+      {key:'OK', label:'OK'},
+      {key:'NON', label:'NON indicati'}
+    ].map(({key,label})=>{
+      const items = groups[key]||[];
+      const list = items.length
+        ? `<ul>${items.map(({drug,result})=>{
+            const clusters = result.clusters.length
+              ? `<span class="compat-clusters">${result.clusters.map(formatCompatCluster).join(', ')}</span>`
+              : '';
+            const reason = (key==='NON' && result.reason)
+              ? `<span class="compat-reason">${esc(result.reason)}</span>`
+              : '';
+            return `<li><b>${esc(drug.drug)}</b>${clusters}${reason}</li>`;
+          }).join('')}</ul>`
+        : `<div class="compat-empty">—</div>`;
+      return `<div class="compat-section"><h4>${label}</h4>${list}</div>`;
+    }).join('');
+    const essentialsHtml = info.essential.length
+      ? `<div style="margin-top:12px"><b>Cluster essenziali</b></div><div class="chips">${info.essential.map(name=>`<span class="chip">${esc(name)} ⭐</span>`).join('')}</div>`
+      : '';
+    const optionalHtml = info.optional.length
+      ? `<div style="margin-top:12px"><b>Altri cluster correlati</b></div><div class="chips">${info.optional.map(name=>`<span class="chip">${esc(name)}</span>`).join('')}</div>`
+      : '';
+    const header = `<div><b>${esc(cs.title||'Caso')}</b></div>`;
+    openModal('Compatibilità farmaci', `${header}${essentialsHtml}${optionalHtml}${sections}`);
+  }
+
+  function showCaseFullSolution(cs){
+    if (!cs){ showToast('Caso non disponibile','bad'); return; }
+    const header = `<div><b>${esc(cs?.__title||cs?.title||'Caso')}</b></div>`;
+    const recs = Array.isArray(cs?.__recommended) ? cs.__recommended : [];
+    if (!recs.length){
+      openModal('Soluzione', `${header}<div style="margin-top:8px">Nessuna raccomandazione disponibile.</div>`);
+      return;
+    }
+    const list = `<ul class="solution-list">${recs.map(rec=>{
+      const regimen = Array.isArray(rec.regimen) && rec.regimen.length
+        ? `<div><strong>Regime</strong>: ${rec.regimen.map(esc).join(', ')}</div>`
+        : '';
+      const setting = rec.setting ? `<div><strong>Setting</strong>: ${esc(rec.setting)}</div>` : '';
+      const rationale = rec.rationale ? `<div><strong>Razionale</strong>: ${esc(rec.rationale)}</div>` : '';
+      const source = rec.source ? `<div><small>Fonte: ${esc(rec.source)}</small></div>` : '';
+      const body = [regimen, setting, rationale, source].filter(Boolean).join('') || '—';
+      return `<li>${body}</li>`;
+    }).join('')}</ul>`;
+    openModal('Soluzione', `${header}${list}`);
+  }
+
+  /* ===== Impara ===== */
+  function renderLearnTable(){
+    const rows = filterDrugsForList();
+    leftList.innerHTML = `
+      <div class="learn-table-wrap">
+        <table class="learn-table">
+          <thead>
+            <tr class="print-only"><th colspan="5">Contagious ©</th></tr>
+            <tr><th>Farmaco</th><th>Categoria</th><th>Coperture (priorità)</th><th>Non copre / Avoid</th><th>Note / Fonte</th></tr>
+          </thead>
+          <tbody>
+            ${rows.map(r=>{
+              const best = new Map();
+              (r.matches||[]).forEach(m=>{
+                if (m.covers===true){
+                  const prev = best.get(m.cluster)||0;
+                  best.set(m.cluster, Math.max(prev, Number(m.priority||1)));
+                }
+              });
+              const cov = Array.from(best.entries())
+                  .map(([c,p])=>`${esc(c)} <small>(P${p})</small>`).join('<br>');
+              const ncv=(r.matches||[]).filter(m=>m.covers===false).map(m=>esc(m.cluster)).join(', ');
+              const av=(r.avoid||[]).map(esc).join(', ');
+              return `<tr>
+                <td><b>${esc(r.drug)}</b></td>
+                <td>${esc(r.category||'')}</td>
+                <td>${cov||'—'}</td>
+                <td>${[ncv,av].filter(Boolean).join('<br>')||'—'}</td>
+                <td>${r.notes?esc(r.notes):''}${r.source?`<br><small>Fonte: ${esc(r.source)}</small>`:''}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+          <tfoot class="print-only"><tr><td colspan="5">Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale: non destinato alla vendita né a fini di lucro. © 2025 David Vigilanti — MedGramo.</td></tr></tfoot>
+        </table>
+      </div>`;
+  }
+
+  /* ===== Azioni comuni ===== */
+  if (btnReshuffleTop){
+    btnReshuffleTop.onclick = ()=>{
+      if (MODE==='clinical'){
+        if (shuffleClinicalCasesInPlace()) showToast('Casi rimescolati','mid');
+      } else if (MODE==='learn'){
+        showToast('La tabella non si rimescola','mid');
+      }
+      // in "covers" non rimescola (per ora)
+    };
+  }
+
+  if (btnPrintPDF){
+    btnPrintPDF.addEventListener('click', ()=>{
+      window.print();
+    });
+  }
+
+  if (btnLearnInfo){
+    btnLearnInfo.setAttribute('aria-haspopup', 'dialog');
+    btnLearnInfo.setAttribute('aria-expanded', 'false');
+    btnLearnInfo.addEventListener('click', ()=>{
+      const isOpen = !!learnInfoPopover && learnInfoPopover.classList.contains('show');
+      setLearnInfoVisible(!isOpen);
+      if (isOpen && btnLearnInfo) btnLearnInfo.focus();
+    });
+  }
+
+  if (btnLearnInfoClose){
+    btnLearnInfoClose.addEventListener('click', ()=>{
+      setLearnInfoVisible(false);
+      if (btnLearnInfo) btnLearnInfo.focus();
+    });
+  }
+
+  if (learnInfoPopover){
+    learnInfoPopover.addEventListener('click', (event)=>{
+      if (event.target === learnInfoPopover){
+        setLearnInfoVisible(false);
+        if (btnLearnInfo) btnLearnInfo.focus();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event)=>{
+    if (event.key === 'Escape' && learnInfoPopover && learnInfoPopover.classList.contains('show')){
+      setLearnInfoVisible(false);
+      if (btnLearnInfo) btnLearnInfo.focus();
+    }
+  });
+
+  btnReset.onclick = ()=>{
+    buildCounters();
+    document.querySelectorAll('.matched,.selected,.locked,.dimmed').forEach(el=>el.classList.remove('matched','selected','locked','dimmed'));
+    clinicalSelections.clear();
+    forceResetTherapyState();
+    renderByMode();
+    showToast('Reset','mid');
+  };
+
+  /* inizializza filtri (vuoti) e primo render */
+  prepareFilters();
+  renderByMode();
+})();
+</script>
+</body>
+</html>

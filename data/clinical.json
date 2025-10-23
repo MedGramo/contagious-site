@@ -1,0 +1,190 @@
+{
+  "version": "1.0",
+
+  "group_order": [
+    "Beta-lattamici",
+    "Glicopeptidi",
+    "Lipopeptidi",
+    "Oxazolidinoni",
+    "Macrolidi/Lincosamidi",
+    "Tetracicline",
+    "Fluorochinoloni",
+    "Sulfonamidi",
+    "Aminoglicosidi",
+    "Polimixine",
+    "Nitro-",
+    "Altri",
+    "Ancora da aggiungere"
+    
+  ],
+
+  "subgroup_order": {
+    "Beta-lattamici": [
+      "Penicilline naturali",
+      "Penicilline anti-stafilococciche",
+      "Aminopenicilline",
+      "Penicilline antipseudomonas",
+      "Cefalosporine I",
+      "Cefalosporine II",
+      "Cefalosporine III",
+      "Cefalosporine IV",
+      "Cefalosporine V",
+      "Carbapenemi"
+    ]
+  },
+
+  "selectables": [
+    { "id": "penicillina_g",   "name": "Penicillina G",   "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline naturali" },
+    { "id": "penicillina_v",   "name": "Penicillina V",   "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline naturali" },
+
+    { "id": "oxacillina",      "name": "Oxacillina",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline anti-stafilococciche" },
+    { "id": "nafcillina",      "name": "Nafcillina",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline anti-stafilococciche" },
+    { "id": "dicloxacillina",  "name": "Dicloxacillina",  "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline anti-stafilococciche" },
+
+    { "id": "ampicillina",     "name": "Ampicillina",     "type": "drug",  "group": "Beta-lattamici", "subgroup": "Aminopenicilline" },
+    { "id": "amoxicillina",    "name": "Amoxicillina",    "type": "drug",  "group": "Beta-lattamici", "subgroup": "Aminopenicilline" },
+
+    { "id": "piperacillina",   "name": "Piperacillina",   "type": "drug",  "group": "Beta-lattamici", "subgroup": "Penicilline antipseudomonas" },
+
+    { "id": "cefazolina",      "name": "Cefazolina",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine I" },
+    { "id": "cefalexina",      "name": "Cefalexina",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine I" },
+
+    { "id": "cefaclor",        "name": "Cefaclor",        "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine II" },
+    { "id": "cefoxitina",      "name": "Cefoxitina",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine II" },
+    { "id": "cefotetan",       "name": "Cefotetan",       "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine II" },
+
+    { "id": "ceftriaxone",     "name": "Ceftriaxone",     "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine III" },
+    { "id": "cefotaxime",      "name": "Cefotaxime",      "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine III" },
+    { "id": "ceftazidime",     "name": "Ceftazidime",     "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine III" },
+
+    { "id": "cefepime",        "name": "Cefepime",        "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine IV" },
+
+    { "id": "ceftarolina",     "name": "Ceftarolina",     "type": "drug",  "group": "Beta-lattamici", "subgroup": "Cefalosporine V" },
+
+    { "id": "meropenem",       "name": "Meropenem",       "type": "drug",  "group": "Beta-lattamici", "subgroup": "Carbapenemi" },
+    { "id": "imipenem",        "name": "Imipenem",        "type": "drug",  "group": "Beta-lattamici", "subgroup": "Carbapenemi" },
+    { "id": "doripenem",       "name": "Doripenem",       "type": "drug",  "group": "Beta-lattamici", "subgroup": "Carbapenemi" },
+    { "id": "ertapenem",       "name": "Ertapenem",       "type": "drug",  "group": "Beta-lattamici", "subgroup": "Carbapenemi" },
+
+    { "id": "vancomicina",     "name": "Vancomicina",     "type": "drug",  "group": "Glicopeptidi" },
+    { "id": "teicoplanina",    "name": "Teicoplanina",    "type": "drug",  "group": "Glicopeptidi" },
+    { "id": "dalbavancina",    "name": "Dalbavancina",    "type": "drug",  "group": "Glicopeptidi" },
+
+    { "id": "daptomicina",     "name": "Daptomicina",     "type": "drug",  "group": "Lipopeptidi" },
+
+    { "id": "linezolid",       "name": "Linezolid",       "type": "drug",  "group": "Oxazolidinoni" },
+    { "id": "tedizolid",       "name": "Tedizolid",       "type": "drug",  "group": "Oxazolidinoni" },
+
+    { "id": "clindamicina",    "name": "Clindamicina",    "type": "drug",  "group": "Macrolidi/Lincosamidi" },
+    { "id": "macrolidi",       "name": "Macrolidi (classe)", "type": "class", "group": "Macrolidi/Lincosamidi" },
+    { "id": "azitromicina",    "name": "Azitromicina",    "type": "drug",  "group": "Macrolidi/Lincosamidi" },
+    { "id": "claritromicina",  "name": "Claritromicina",  "type": "drug",  "group": "Macrolidi/Lincosamidi" },
+    { "id": "eritromicina",    "name": "Eritromicina",    "type": "drug",  "group": "Macrolidi/Lincosamidi" },
+
+    { "id": "doxiciclina",     "name": "Doxiciclina",     "type": "drug",  "group": "Tetracicline" },
+    { "id": "tetraciclina",    "name": "Tetraciclina",    "type": "drug",  "group": "Tetracicline" },
+
+    { "id": "levofloxacina",   "name": "Levofloxacina",   "type": "drug",  "group": "Fluorochinoloni" },
+    { "id": "moxifloxacina",   "name": "Moxifloxacina",   "type": "drug",  "group": "Fluorochinoloni" },
+    { "id": "gemifloxacina",   "name": "Gemifloxacina",   "type": "drug",  "group": "Fluorochinoloni" },
+    { "id": "ciprofloxacina",  "name": "Ciprofloxacina",  "type": "drug",  "group": "Fluorochinoloni" },
+
+    { "id": "cotrimossazolo",  "name": "Co-trimossazolo (TMP-SMX)", "type": "drug", "group": "Sulfonamidi" },
+
+    { "id": "aminoglicosidi",  "name": "Aminoglicosidi (classe)", "type": "class", "group": "Aminoglicosidi" },
+    { "id": "gentamicina",     "name": "Gentamicina",     "type": "drug",  "group": "Aminoglicosidi" },
+    { "id": "tobramicina",     "name": "Tobramicina",     "type": "drug",  "group": "Aminoglicosidi" },
+    { "id": "amikacina",       "name": "Amikacina",       "type": "drug",  "group": "Aminoglicosidi" },
+
+    { "id": "polimixine",      "name": "Polimixine (classe)", "type": "class", "group": "Polimixine" },
+    { "id": "colistina",       "name": "Colistina",       "type": "drug",  "group": "Polimixine" },
+    { "id": "polimixina_b",    "name": "Polimixina B",    "type": "drug",  "group": "Polimixine" },
+
+    { "id": "metronidazolo",   "name": "Metronidazolo",   "type": "drug",  "group": "Nitro-" },
+    { "id": "nitrofurantoina", "name": "Nitrofurantoina", "type": "drug",  "group": "Nitro-" },
+
+    { "id": "aztreonam",       "name": "Aztreonam",       "type": "drug",  "group": "Altri" },
+    { "id": "fosfomicina",     "name": "Fosfomicina",     "type": "drug",  "group": "Altri" },
+    { "id": "rifampicina",     "name": "Rifampicina",     "type": "drug",  "group": "Altri" },
+    { "id": "fidaxomicina",    "name": "Fidaxomicina",    "type": "drug",  "group": "Altri" },
+    { "id": "cloramfenicolo",  "name": "Cloramfenicolo",  "type": "drug",  "group": "Altri" },
+    { "id": "tigeciclina",     "name": "Tigeciclina",     "type": "drug",  "group": "Altri" },
+    { "id": "da_aggiungere", "name": "Da aggiungere", "type": "drug", "group": "Ancora da aggiungere" }
+  ],
+
+  "cases": [
+    {
+      "id": "leishmaniosi_viaggio_001",
+      "title": "Papula Ulcerata e Odinofagia in pz di ritorno dal Brasile",
+      "vignette": "Pz di 29 anni si presenta in PS per odinofiagia e parziale afonia. Negli ultimi tempi lamenta febbre serotonina con sudorazione. In anamnesi riferisce di essere stato circa 3 mesi fa in un viaggio di piacere in Brasile. All'EO si mostra papula ulcerata al centro e rigonfia sui bordi sul collo. Linfonodi cervicali visivamente ingrosssati, mobili e dolenti. Odinofagia marcata e afonia confermata all'EO. In attesa di risultati di Biopsia sulla Papula e di Tampone Cutaneo sulla medesima",
+      "hints": ["Ha fatto viaggio in Sud America qualche mese fa: forse l'ha punto qualcosa?"],
+      "diagnosis": "Leishmaniosi Braziliensis, con interessamento mucoso",
+      "difficulty": 1,
+      "matching": {
+        "mode": "set",
+        "essentials": [
+          { "id": "da_aggiungere", "type": "drug" }
+        ],
+        "allow_extras": false
+      },
+      "recommended": [
+        {
+          "regimen": ["Meglumina Antimoniato"],
+          "setting": "Leishmaniosi Cutanea, casi lievi",
+          "rationale": "Somministrazione intradermica sulla papula",
+          "source": "Linee guida locali"
+        },
+        {
+          "regimen": ["Amoftericina B, Glucosata"],
+          "setting": "Leishmaniosi Viscerale",
+          "rationale": "Non si tratta di una forma cutanea, bensì sistemica",
+          "source": "Linee guida locali"
+        }
+      ],
+      "notes_on_completion": [
+        "Terapia da non fare durante la gravidanza. Si somministra al neonato subito dopo la nascita.",
+        "Amoftericina B va somministrata con Glucosata e assieme a Soluzione Fisiologica per ridurre il danno renale",
+        "Nei bambini la forma cutanea può essere trattata con Paromomicina topica"
+      ]
+    },
+
+    {
+      "id": "listeria_gravidanza_neuro_001",
+      "title": "Gastroenterite febbrile in gravidanza con segni neurologici",
+      "vignette": "Donna al terzo trimestre con febbre, diarrea e segni neurologici.",
+      "hints": [
+        "Pensa a Listeria in gravidanza (SNC).",
+        "Associazione β-lattamico + aminoglicoside nelle forme severe."
+      ],
+      "diagnosis": "Listeriosi (sospetta meningoencefalite da Listeria monocytogenes)",
+      "difficulty": 2,
+      "matching": {
+        "mode": "set",
+        "essentials": [
+          { "id": "ampicillina",   "type": "drug"  },
+          { "id": "gentamicina","type": "drug" }
+        ],
+        "allow_extras": false
+      },
+      "recommended": [
+        {
+          "regimen": ["Ampicillina (EV)", "Gentamicina"],
+          "setting": "Forme gravi / meningee",
+          "rationale": "Ampicillina è il farmaco di scelta; aminoglicoside per sinergia.",
+          "source": "Linee guida locali / IDSA"
+        },
+        {
+          "regimen": ["Amoxicillina"],
+          "setting": "Forme non complicate in gravidanza",
+          "rationale": "β-lattamico attivo nelle forme non severe.",
+          "source": "Linee guida locali"
+        }
+      ],
+      "notes_on_completion": [
+        "✅ Associazione consigliata: Ampicillina (EV) + Gentamicina nelle forme gravi.",
+        "❌ Le cefalosporine sono inefficaci su Listeria.",
+        "Evitare fluorochinoloni in gravidanza."
+      ]
+    }
+  ]
+}
