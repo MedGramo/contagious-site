@@ -11,3 +11,31 @@ Il codice sorgente completo e gli strumenti di sviluppo risiedono in una repo pr
 - Modalità Impara (tabella stampabile con zebra e disclaimer)
 
 I dati sono caricati da:
+
+## Stato: BETA (no-index)
+Questo sito è in BETA ed è impostato per non essere indicizzato:
+- robots.txt con Disallow: /
+- <meta name="robots" content="noindex,nofollow">
+
+Condividere l’URL è possibile, ma il contenuto non è pensato per diffusione ampia.
+
+## Disclaimer (uso formativo)
+Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede
+verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale.  
+© 2025 David Vigilanti — MedGramo.
+
+## Termini d’uso (riassunto)
+- È consentita la sola visione a scopo personale/educativo durante la beta.
+- Vietati copia, modifica, redistribuzione, scraping/mirroring dei file (HTML/CSS/JS/JSON, vignette).
+- I termini completi sono nel file `LICENSE`.
+
+## Licenza
+Questa repo è rilasciata con termini proprietari (tutti i diritti riservati).  
+Vedi `LICENSE` per i dettagli.
+
+## Segnalazioni/Feedback
+Invia un feedback tramite modulo (es. Google Form) oppure apri una *issue*.
+
+## Contatti
+David Vigilanti — MedGramo  
+Email: (vigilanti.david.95@gmail.com)
