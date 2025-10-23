@@ -1,16 +1,35 @@
+Copyright (c) 2025 David Vigilanti — MedGramo. Tutti i diritti riservati.
+
+È concessa la sola visualizzazione di questo sito e dei relativi asset compilati
+a fini personali, non commerciali e di valutazione didattica. Qualsiasi altro uso
+è vietato senza preventiva autorizzazione scritta del titolare dei diritti.
+
+Non è consentito copiare, riprodurre, modificare, tradurre, fondere, pubblicare,
+distribuire, sublicenziare, vendere, effettuare reverse engineering, eseguire
+scraping o harvesting dei dati, né creare opere derivate basate su questo sito,
+sul relativo codice sorgente, sui dataset JSON, sulle vignette cliniche, sui testi
+o su qualunque sua parte. Vietati mirror e ri-pubblicazioni pubbliche.
+
+Questa repository fornisce asset statici per una fase di beta test; il sorgente
+completo è mantenuto privatamente. Per richieste di permesso: vigilanti.david.95@gmail.com
+
+DISCLAIMER CLINICO: strumento formativo; non fornisce diagnosi/terapie. L’uso clinico
+richiede verifica su fonti ufficiali e responsabilità professionale.
+---------------------------------------------------------------------------------------
+
 Copyright (c) 2025 David Vigilanti — MedGramo. All rights reserved.
 
 Permission is granted to access and view this website and its compiled assets solely for
 personal, non-commercial, educational evaluation. Any other use is prohibited without
-prior written permission from the copyright holder.
+prior written permission from the rights holder.
 
 You may not copy, reproduce, modify, translate, merge, publish, distribute, sublicense,
 sell, reverse engineer, scrape, harvest data from, or create derivative works based on
-this site, its source code, JSON datasets, clinical vignettes, texts, or any part thereof.
-No public mirrors or re-hosting.
+this site, its source code, JSON datasets, clinical vignettes, texts, or any portion thereof.
+Public mirrors or re-hosting are prohibited.
 
-DISCLAIMER CLINICO: strumento formativo; non fornisce diagnosi/terapie. L’uso clinico
-richiede verifica su fonti ufficiali e responsabilità professionale.
+This repository provides static assets for a beta test; the full source code is maintained
+privately. For permission requests: vigilanti.david.95@gmail.com
 
-This repository provides compiled assets for a beta test; the source code is maintained
-privately. For permissions please contact: vigilanti.david.95@gmail.com
+CLINICAL DISCLAIMER: educational tool; does not provide diagnosis/therapy. Clinical use
+requires verification against official sources and professional responsibility.
