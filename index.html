@@ -381,6 +381,28 @@
     tfoot.print-only{display:table-footer-group;}
   }
 
+  @media (max-width:1024px) and (orientation:portrait){
+    .rotate-hint{display:flex; align-items:center; gap:10px; margin:10px 0 0; padding:6px 10px; border-radius:10px; background:rgba(122,162,255,.12); border:1px solid rgba(122,162,255,.2); color:#dce6ff; font-size:13px; line-height:1.35;}
+    .rotate-hint span{flex:1; min-width:0;}
+    .rotate-hint-dismiss{background:none; border:none; color:#9fb5ff; font-size:13px; padding:0; cursor:pointer; text-decoration:underline;}
+    .rotate-hint-dismiss:focus-visible{outline:2px solid rgba(122,162,255,.4); outline-offset:2px; border-radius:4px;}
+  }
+
+  @media (max-width:1024px) and (orientation:landscape){
+    body:not(.mode-impara) .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px;}
+    body:not(.mode-impara) .board .col{min-width:0; max-width:100%; max-height:calc(100svh - var(--header-h,64px) - var(--toolbar-h,56px) - 16px); max-height:calc(100dvh - var(--header-h,64px) - var(--toolbar-h,56px) - 16px); overflow:auto; -webkit-overflow-scrolling:touch; scrollbar-gutter:stable both-edges;}
+    body:not(.mode-impara) .board .col, body:not(.mode-impara) .board .list{overflow-x:hidden;}
+    body:not(.mode-impara) .board .col h2{margin-bottom:8px;}
+    body:not(.mode-impara) .board .list{height:auto; min-height:0; max-height:none; flex:1; word-break:break-word;}
+    body:not(.mode-impara) .board .item{word-break:break-word;}
+  }
+
+  @media (max-width:1024px) and (orientation:landscape){
+    @supports not (height:100dvh){
+      body:not(.mode-impara) .board .col{max-height:calc(100vh - var(--header-h,64px) - var(--toolbar-h,56px) - 16px);}
+    }
+  }
+
   .mode-clinica #btnReshuffleTop,
   .mode-clinica #filterCategory,
   .mode-clinica #filterCluster{display:none !important;}
@@ -417,6 +439,10 @@
       <a class="btn" id="btnFeedback" href="https://forms.gle/8vPSVRSj8ResCwZZ9" target="_blank" rel="noopener noreferrer">📝 Lascia un feedback!</a>
       <button class="btn" id="btnPrintPDF">🖨️ Stampa PDF</button>
       <button class="btn" id="btnLearnInfo">ℹ️ Info</button>
+    </div>
+    <div class="rotate-hint" hidden>
+      <span>🔄 Ruota il dispositivo per vedere i pannelli affiancati.</span>
+      <button type="button" class="rotate-hint-dismiss" aria-label="Nascondi suggerimento">[Nascondi]</button>
     </div>
   </div>
 </header>
@@ -460,6 +486,97 @@
     <button type="button" id="btnLearnInfoClose">Chiudi</button>
   </div>
 </div>
+
+<script>
+(()=>{
+  const WIDTH_LIMIT = 1024;
+  const ORIENTATION_QUERY = window.matchMedia('(orientation: landscape)');
+  const storageKey = 'rotateHintDismissed';
+  const body = document.body;
+  const header = document.querySelector('header');
+  const toolbar = header ? header.querySelector('.toolbar') : null;
+  const rotateHint = document.querySelector('.rotate-hint');
+  const dismissBtn = rotateHint ? rotateHint.querySelector('.rotate-hint-dismiss') : null;
+
+  const getStorage = ()=>{
+    try {
+      return window.localStorage || null;
+    } catch (err){
+      return null;
+    }
+  };
+
+  const updateDimensions = ()=>{
+    if (!body) return;
+    const hintVisible = rotateHint && !rotateHint.hasAttribute('hidden');
+    const headerHeight = header ? header.offsetHeight : 0;
+    const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
+    let hintHeight = 0;
+    if (hintVisible && rotateHint){
+      const styles = window.getComputedStyle(rotateHint);
+      const mt = Number.parseFloat(styles?.marginTop || '0') || 0;
+      const mb = Number.parseFloat(styles?.marginBottom || '0') || 0;
+      hintHeight = rotateHint.offsetHeight + mt + mb;
+    }
+    const headerTop = Math.max(0, headerHeight - toolbarHeight - hintHeight);
+    const toolbarTotal = toolbarHeight + hintHeight;
+    body.style.setProperty('--header-h', `${headerTop}px`);
+    body.style.setProperty('--toolbar-h', `${toolbarTotal}px`);
+  };
+
+  const shouldShowHint = ()=>{
+    if (!rotateHint) return false;
+    if (body && body.classList.contains('mode-impara')) return false;
+    if (ORIENTATION_QUERY.matches) return false;
+    if (window.innerWidth > WIDTH_LIMIT) return false;
+    const storage = getStorage();
+    return !storage || storage.getItem(storageKey) !== '1';
+  };
+
+  const applyOrientation = ()=>{
+    if (body){
+      body.setAttribute('data-orientation', ORIENTATION_QUERY.matches ? 'landscape' : 'portrait');
+    }
+    if (rotateHint){
+      if (shouldShowHint()){
+        rotateHint.removeAttribute('hidden');
+      } else {
+        rotateHint.setAttribute('hidden', '');
+      }
+    }
+    updateDimensions();
+  };
+
+  const handleResize = ()=>{ applyOrientation(); };
+
+  if (dismissBtn && rotateHint){
+    dismissBtn.addEventListener('click', event=>{
+      event.preventDefault();
+      const storage = getStorage();
+      if (storage){
+        storage.setItem(storageKey, '1');
+      }
+      rotateHint.setAttribute('hidden', '');
+      updateDimensions();
+    });
+  }
+
+  applyOrientation();
+
+  if (body && typeof MutationObserver === 'function'){
+    const observer = new MutationObserver(applyOrientation);
+    observer.observe(body, {attributes:true, attributeFilter:['class']});
+  }
+
+  if (typeof ORIENTATION_QUERY.addEventListener === 'function'){
+    ORIENTATION_QUERY.addEventListener('change', applyOrientation);
+  } else if (typeof ORIENTATION_QUERY.addListener === 'function'){
+    ORIENTATION_QUERY.addListener(applyOrientation);
+  }
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('orientationchange', applyOrientation);
+})();
+</script>
 
 <script>
 (()=> {
