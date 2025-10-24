@@ -370,15 +370,18 @@
     body.mode-impara .board .col{display:block; width:100%; max-width:none; padding:0; margin:0; border:none; background:none; box-shadow:none; overflow:visible !important; height:auto !important;}
     body.mode-impara .board .col + .col{display:none;}
     body.mode-impara .board h2{display:none !important;}
-    body.mode-impara .list{display:block; padding:0; width:100%;}
-    body.mode-impara .learn-table-wrap{display:block; border:1px solid #c5ccd8; border-radius:6px; background:#fff; box-shadow:none; margin:0; width:100%;}
-    body.mode-impara .learn-table{width:100% !important; min-width:0; border-collapse:separate; background:#fff; color:#000; page-break-inside:auto; break-inside:auto; table-layout:auto;}
+    body.mode-impara .list{display:block; padding:0 !important; margin:0 !important; width:100%;}
+    body.mode-impara .learn-table-wrap{display:block; border:1px solid #c5ccd8; border-radius:6px; background:#fff; box-shadow:none; margin:0; width:100%; padding:0 !important;}
+    body.mode-impara .learn-table{width:100% !important; min-width:0; border-collapse:collapse !important; border-spacing:0 !important; background:#fff; color:#000; page-break-inside:auto; break-inside:auto; table-layout:auto;}
     body.mode-impara .learn-table thead{display:table-header-group;}
+    body.mode-impara .learn-table thead tr{break-inside:avoid; page-break-inside:avoid;}
     body.mode-impara .learn-table thead th{position:static !important; top:auto !important; background:#f4f4f4; color:#000; border-bottom:1px solid #c8ced8; font-weight:700; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    body.mode-impara .learn-table tr{page-break-inside:avoid; break-inside:avoid;}
     body.mode-impara .learn-table th,
-    body.mode-impara .learn-table td{padding:9px 12px; border-bottom:1px solid #d5dbe4; color:#000; vertical-align:top; word-break:break-word; white-space:normal !important; page-break-inside:avoid; break-inside:avoid;}
+    body.mode-impara .learn-table td{padding:9px 12px; border-bottom:1px solid #d5dbe4; color:#000; vertical-align:top; word-break:break-word; white-space:normal !important; overflow-wrap:anywhere; page-break-inside:avoid; break-inside:avoid;}
     body.mode-impara .learn-table tbody{display:table-row-group;}
     body.mode-impara .learn-table tbody tr{break-inside:avoid; page-break-inside:avoid;}
+    body.mode-impara .learn-table tfoot tr{break-inside:avoid; page-break-inside:avoid;}
     body.mode-impara .learn-table tbody tr:nth-child(odd){background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     body.mode-impara .learn-table tbody tr:nth-child(even){background:#f1f1f1; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     body.mode-impara .learn-table tbody tr:hover{background:transparent;}
@@ -386,10 +389,9 @@
     body.mode-impara .learn-table td b{color:#000;}
     body.mode-impara .learn-table td:last-child{min-width:180px;}
     body.mode-impara .learn-table thead .print-only th{background:#fff; border-bottom:1px solid #c8ced8; font-size:12px; letter-spacing:.02em;}
+    body.mode-impara .learn-table tr.print-only{display:table-row !important;}
     body.mode-impara .learn-table tfoot{display:table-footer-group !important;}
-    body.mode-impara .learn-table tfoot td{padding:8px 12px; border-top:1px solid #c8ced8; font-size:9px; line-height:1.45; font-weight:600; color:#333; background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
-    .print-only{display:table-row;}
-    tfoot.print-only{display:table-footer-group !important;}
+    body.mode-impara .learn-table tfoot td{padding:8px 12px; border-top:1px solid #c8ced8; font-size:9px; line-height:1.45; font-weight:600; color:#333; background:#fff; white-space:normal !important; word-break:break-word; overflow-wrap:anywhere; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
   }
 
   @media (max-width:1024px) and (orientation:portrait){
@@ -2839,7 +2841,7 @@
       <div class="learn-table-wrap">
         <table class="learn-table">
           <thead>
-            <tr class="print-only"><th colspan="5">Contagious ©</th></tr>
+            <tr class="learn-table-title print-only"><th colspan="5">Contagious ©</th></tr>
             <tr><th>Farmaco</th><th>Categoria</th><th>Coperture (priorità)</th><th>Non copre / Avoid</th><th>Note / Fonte</th></tr>
           </thead>
           <tbody>
@@ -2864,7 +2866,9 @@
               </tr>`;
             }).join('')}
           </tbody>
-          <tfoot class="print-only"><tr><td colspan="5">Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale: non destinato alla vendita né a fini di lucro. © 2025 David Vigilanti — MedGramo.</td></tr></tfoot>
+          <tfoot>
+            <tr class="learn-table-disclaimer print-only"><td colspan="5">Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale: non destinato alla vendita né a fini di lucro. © 2025 David Vigilanti — MedGramo.</td></tr>
+          </tfoot>
         </table>
       </div>`;
   }
