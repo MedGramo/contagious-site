@@ -18,6 +18,7 @@
   html,body{height:100%}
   body{margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial; --header-h:64px; --toolbar-h:56px; --toolbar-h-active:var(--toolbar-h);}
   .print-only{display:none;}
+  #print-root{display:none;}
   header{position:sticky; top:0; z-index:5; background:linear-gradient(180deg,var(--bg),rgba(14,17,23,.94)); border-bottom:1px solid var(--border)}
   .wrap{max-width:1200px; margin:0 auto; padding:14px 16px}
   h1{margin:0 0 8px; font-size:18px}
@@ -346,6 +347,77 @@
     #btnFeedback{display:none !important;}
     .toolbar-pill{display:none !important;}
     html{height:auto !important; min-height:0 !important;}
+    body.print-snapshot-active{
+      background:#fff;
+      color:#000;
+      font:13px/1.45 "Helvetica Neue",Arial,sans-serif;
+      padding:0;
+      box-shadow:none;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      min-height:0 !important;
+    }
+    body.print-snapshot-active > *:not(#print-root){display:none !important;}
+    body.print-snapshot-active #print-root{display:block !important; margin:0 !important; padding:0 !important;}
+    body.print-snapshot-active #print-root,
+    body.print-snapshot-active #print-root *,
+    body.print-snapshot-active #print-root table{height:auto !important; max-height:none !important; overflow:visible !important;}
+    body.print-snapshot-active #print-root table{
+      width:100% !important;
+      border-collapse:collapse !important;
+      border-spacing:0 !important;
+      background:#fff;
+      color:#000;
+      page-break-inside:auto;
+      break-inside:auto;
+      border:1px solid #c5ccd8;
+    }
+    body.print-snapshot-active #print-root thead{display:table-header-group;}
+    body.print-snapshot-active #print-root tfoot{display:table-footer-group;}
+    body.print-snapshot-active #print-root tr,
+    body.print-snapshot-active #print-root th,
+    body.print-snapshot-active #print-root td{page-break-inside:avoid; break-inside:avoid;}
+    body.print-snapshot-active #print-root th,
+    body.print-snapshot-active #print-root td{
+      padding:9px 12px;
+      border-bottom:1px solid #d5dbe4;
+      color:#000;
+      vertical-align:top;
+      white-space:normal !important;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    body.print-snapshot-active #print-root thead tr:not(.print-snapshot-title) th{
+      background:#f4f4f4;
+      border-bottom:1px solid #c8ced8;
+      font-weight:700;
+    }
+    body.print-snapshot-active #print-root .print-snapshot-title th{
+      background:#fff;
+      border-bottom:1px solid #c8ced8;
+      font-size:12px;
+      letter-spacing:.02em;
+    }
+    body.print-snapshot-active #print-root tbody tr:nth-child(odd){background:#fff;}
+    body.print-snapshot-active #print-root tbody tr:nth-child(even){background:#f1f1f1;}
+    body.print-snapshot-active #print-root tbody tr:hover{background:transparent;}
+    body.print-snapshot-active #print-root td small{color:#333;}
+    body.print-snapshot-active #print-root td b{color:#000;}
+    body.print-snapshot-active #print-root td:last-child{min-width:180px;}
+    body.print-snapshot-active #print-root tfoot td{
+      padding:8px 12px;
+      border-top:1px solid #c8ced8;
+      font-size:9px;
+      line-height:1.45;
+      font-weight:600;
+      color:#333;
+      background:#fff;
+      white-space:normal !important;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+    }
     body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; min-height:0 !important;}
     body.mode-impara header,
     body.mode-impara .toolbar,
@@ -757,6 +829,13 @@
   const leftList   = document.getElementById('leftList');
   const rightList  = document.getElementById('rightList');
   const disclaimerEl = document.getElementById('appDisclaimer');
+
+  const isIOSDevice = ()=>{
+    const ua = window.navigator?.userAgent || '';
+    const platform = window.navigator?.platform || '';
+    const maxTouchPoints = Number(window.navigator?.maxTouchPoints) || 0;
+    return /iPad|iPhone|iPod/i.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1);
+  };
 
   document.title = 'Contagious — MedGramo';
 
@@ -2965,8 +3044,99 @@
   }
 
   if (btnPrintPDF){
-    btnPrintPDF.addEventListener('click', ()=>{
-      window.print();
+    btnPrintPDF.addEventListener('click', (event)=>{
+      if (MODE !== 'learn'){ window.print(); return; }
+      if (!isIOSDevice()){ window.print(); return; }
+
+      event.preventDefault();
+
+      const sourceTable = document.querySelector('.learn-table');
+      if (!sourceTable){ window.print(); return; }
+
+      const existingRoot = document.getElementById('print-root');
+      if (existingRoot){ existingRoot.remove(); }
+
+      const headerRow = sourceTable.tHead ? sourceTable.tHead.querySelector('tr:not(.print-only)') : null;
+      let sampleRow = headerRow;
+      if (!sampleRow && sourceTable.tBodies && sourceTable.tBodies.length){
+        const firstBody = sourceTable.tBodies[0];
+        if (firstBody && firstBody.rows && firstBody.rows.length){
+          sampleRow = firstBody.rows[0];
+        }
+      }
+      const columnCount = sampleRow ? sampleRow.cells.length : 5;
+      const disclaimerSource = sourceTable.tFoot ? sourceTable.tFoot.querySelector('td') : null;
+      const disclaimerText = disclaimerSource ? disclaimerSource.textContent.trim() : DEFAULT_DISCLAIMER_TEXT;
+
+      const printRoot = document.createElement('div');
+      printRoot.id = 'print-root';
+      printRoot.setAttribute('aria-hidden', 'true');
+
+      const table = document.createElement('table');
+      table.className = 'learn-print-table';
+
+      const thead = document.createElement('thead');
+      const titleRow = document.createElement('tr');
+      titleRow.className = 'print-snapshot-title';
+      const titleCell = document.createElement('th');
+      titleCell.setAttribute('colspan', String(columnCount));
+      titleCell.textContent = 'Contagious ©';
+      titleRow.appendChild(titleCell);
+      thead.appendChild(titleRow);
+
+      if (headerRow){
+        thead.appendChild(headerRow.cloneNode(true));
+      }
+
+      table.appendChild(thead);
+
+      if (sourceTable.tBodies && sourceTable.tBodies[0]){
+        table.appendChild(sourceTable.tBodies[0].cloneNode(true));
+      }
+
+      const tfoot = document.createElement('tfoot');
+      const footRow = document.createElement('tr');
+      footRow.className = 'print-snapshot-disclaimer';
+      const footCell = document.createElement('td');
+      footCell.setAttribute('colspan', String(columnCount));
+      footCell.textContent = disclaimerText;
+      footRow.appendChild(footCell);
+      tfoot.appendChild(footRow);
+      table.appendChild(tfoot);
+
+      printRoot.appendChild(table);
+      document.body.appendChild(printRoot);
+      document.body.classList.add('print-snapshot-active');
+
+      let cleanedUp = false;
+      const previousAfterPrint = window.onafterprint;
+      let fallbackTimer = null;
+
+      const cleanup = ()=>{
+        if (cleanedUp) return;
+        cleanedUp = true;
+        if (fallbackTimer) window.clearTimeout(fallbackTimer);
+        if (printRoot.parentNode) printRoot.parentNode.removeChild(printRoot);
+        document.body.classList.remove('print-snapshot-active');
+        window.onafterprint = previousAfterPrint;
+      };
+
+      window.onafterprint = (event)=>{
+        if (typeof previousAfterPrint === 'function'){
+          try {
+            previousAfterPrint.call(window, event);
+          } catch (err){
+            /* noop */
+          }
+        }
+        cleanup();
+      };
+
+      fallbackTimer = window.setTimeout(cleanup, 3000);
+
+      requestAnimationFrame(()=>{
+        window.print();
+      });
     });
   }
 
