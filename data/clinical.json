@@ -317,7 +317,6 @@
   "matching": {
     "mode": "set",
     "essentials": [
-      { "id": "isoniazide", "type": "drug" },
       { "id": "da_aggiungere"}
     ],
     "allow_extras": false
