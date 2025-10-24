@@ -572,6 +572,19 @@
   const clinicalStatus = document.getElementById('clinicalStatus');
   const btnLoadClinical = document.getElementById('btnLoadClinical');
 
+  const locationProtocol = (typeof window !== 'undefined' && window.location && window.location.protocol)
+    ? window.location.protocol
+    : '';
+  const locationSearch = (typeof window !== 'undefined' && window.location)
+    ? window.location.search || ''
+    : '';
+  const locationParams = new URLSearchParams(locationSearch);
+  const CLINICAL_UPLOAD_ALLOWED = (locationProtocol !== 'http:' && locationProtocol !== 'https:')
+    || locationParams.get('dev') === '1';
+  if (clinicalLoader && !CLINICAL_UPLOAD_ALLOWED){
+    clinicalLoader.hidden = true;
+  }
+
   const btnReshuffleTop = document.getElementById('btnReshuffleTop');
   const btnReset = document.getElementById('btnReset');
   const btnPrintPDF = document.getElementById('btnPrintPDF');
@@ -1694,7 +1707,20 @@
   }
 
   /* ===== Filtri ===== */
-  [searchInput, filterCategory, filterCluster].forEach(el=>el.addEventListener('input', ()=>renderByMode()));
+  if (searchInput){
+    searchInput.addEventListener('input', ()=>{
+      if (MODE==='clinical'){
+        renderClinicalSelectablesAccordion();
+        syncClinicalSelectionUI();
+      } else {
+        renderByMode();
+      }
+    });
+  }
+  [filterCategory, filterCluster].forEach(el=>{
+    if (!el) return;
+    el.addEventListener('input', ()=>renderByMode());
+  });
 
   function prepareFilters(){
     // Filtro categoria: usa i 12 gruppi fissi
@@ -1743,7 +1769,11 @@
       setLearnInfoVisible(false);
     }
     if (MODE==='clinical'){
-      if (clinicalLoader) clinicalLoader.style.display = 'flex';
+      if (clinicalLoader){
+        const showUpload = CLINICAL_UPLOAD_ALLOWED;
+        clinicalLoader.hidden = !showUpload;
+        clinicalLoader.style.display = showUpload ? 'flex' : 'none';
+      }
       if (fileDrugs) fileDrugs.style.display = 'none';
       updateClinicalLoaderStatus();
     } else {
