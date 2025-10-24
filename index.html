@@ -63,7 +63,8 @@
 
   @media print{
     .coming-soon-button,
-    .coming-soon-layer{display:none !important;}
+    .coming-soon-layer,
+    .screen-only{display:none !important;}
   }
 
   .clinical-loader{display:none; grid-column:1/-1; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#101828; flex-wrap:wrap; gap:10px; align-items:center}
@@ -703,6 +704,7 @@
       <li>Orientamento: <em>Verticale</em>.</li>
       <li>Margini: <em>Default</em> (o <em>Nessuno</em>, se serve più spazio).</li>
     </ul>
+    <p class="screen-only">⚠️ Work in progress — Su dispositivi mobili iOS (iPhone/iPad) la stampa non impagina correttamente. Scusate il disagio, ci stiamo lavorando!</p>
     <button type="button" id="btnLearnInfoClose">Chiudi</button>
   </div>
 </div>
