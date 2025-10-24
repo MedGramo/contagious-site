@@ -3,7 +3,7 @@
 Questa repo contiene solo la build pubblica del sito statico (HTML/JS/JSON) per la fase di beta testing.  
 Il codice sorgente completo e gli strumenti di sviluppo risiedono in una repo privata.
 
-> URL (GitHub Pages): sostituisci questo testo con l’URL che GitHub Pages ti fornirà.
+> URL (GitHub Pages): https://medgramo.github.io/contagious-site/
 
 ## Cosa include
 - Modalità Bug-Drug (matching patogeni ↔️ antibiotici)
@@ -37,7 +37,11 @@ Questa repo è rilasciata con termini proprietari (tutti i diritti riservati).
 Vedi LICENSE per i dettagli.
 
 ## Segnalazioni / Feedback
-Invia un feedback tramite modulo (es. Google Form) oppure apri una *issue*.
+📝 **Lascia un feedback**: https://forms.gle/8vPSVRSj8ResCwZZ9
+
+**Privacy:** feedback anonimo. Le risposte sono usate solo per migliorare Contagious.
+Nessun dato personale richiesto; l’email è facoltativa.
+
 
 ## Contatti
 David Vigilanti — MedGramo  
@@ -50,7 +54,7 @@ Email: vigilanti.david.95@gmail.com
 This repository contains only the public build of the static site (HTML/JS/JSON) for the beta testing phase.  
 The full source code and development tools live in a private repository.
 
-> URL (GitHub Pages): replace this line with the URL provided by GitHub Pages.
+> URL (GitHub Pages): https://medgramo.github.io/contagious-site/
 
 ## What’s included
 - Bug-Drug mode (pathogen ↔️ antibiotic matching)
@@ -84,7 +88,7 @@ This repository is released under proprietary terms (all rights reserved).
 See LICENSE for details.
 
 ## Issues / Feedback
-Send feedback via a form (e.g., Google Form) or open an *issue*.
+📝 **Leave feedback**: https://forms.gle/8vPSVRSj8ResCwZZ9
 
 ## Contact
 David Vigilanti — MedGramo  
