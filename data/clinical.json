@@ -118,7 +118,7 @@
       "title": "Papula Ulcerata e Odinofagia in pz di ritorno dal Brasile",
       "vignette": "Pz di 29 anni si presenta in PS per odinofiagia e parziale afonia. Negli ultimi tempi lamenta febbre serotonina con sudorazione. In anamnesi riferisce di essere stato circa 3 mesi fa in un viaggio di piacere in Brasile. All'EO si mostra papula ulcerata al centro e rigonfia sui bordi sul collo. Linfonodi cervicali visivamente ingrosssati, mobili e dolenti. Odinofagia marcata e afonia confermata all'EO. In attesa di risultati di Biopsia sulla Papula e di Tampone Cutaneo sulla medesima",
       "hints": ["Ha fatto viaggio in Sud America qualche mese fa: forse l'ha punto qualcosa?"],
-      "diagnosis": "Leishmaniosi Braziliensis, con interessamento mucoso",
+      "diagnosis": "Leishmaniosi muco-cutanea (Leishmania Braziliensis)",
       "difficulty": 1,
       "matching": {
         "mode": "set",
@@ -130,61 +130,259 @@
       "recommended": [
         {
           "regimen": ["Meglumina Antimoniato"],
-          "setting": "Leishmaniosi Cutanea, casi lievi",
+          "setting": "Leishmaniosi cutanea semplice",
           "rationale": "Somministrazione intradermica sulla papula",
           "source": "Linee guida locali"
         },
         {
           "regimen": ["Amoftericina B, Glucosata"],
           "setting": "Leishmaniosi Viscerale",
-          "rationale": "Non si tratta di una forma cutanea, bensì sistemica",
+          "rationale": "Indicata per le forme viscerali o mucocutanee diffuse, refrattarie al trattamento locale.",
           "source": "Linee guida locali"
         }
       ],
       "notes_on_completion": [
-        "Terapia da non fare durante la gravidanza. Si somministra al neonato subito dopo la nascita.",
+        "Evitare l’uso di antimoniali in gravidanza; preferire Amfotericina B se necessaria.",
         "Amoftericina B va somministrata con Glucosata e assieme a Soluzione Fisiologica per ridurre il danno renale",
         "Nei bambini la forma cutanea può essere trattata con Paromomicina topica"
       ]
     },
-
     {
-      "id": "listeria_gravidanza_neuro_001",
-      "title": "Gastroenterite febbrile in gravidanza con segni neurologici",
-      "vignette": "Donna al terzo trimestre con febbre, diarrea e segni neurologici.",
-      "hints": [
-        "Pensa a Listeria in gravidanza (SNC).",
-        "Associazione β-lattamico + aminoglicoside nelle forme severe."
-      ],
-      "diagnosis": "Listeriosi (sospetta meningoencefalite da Listeria monocytogenes)",
-      "difficulty": 2,
-      "matching": {
-        "mode": "set",
-        "essentials": [
-          { "id": "ampicillina",   "type": "drug"  },
-          { "id": "gentamicina","type": "drug" }
-        ],
-        "allow_extras": false
-      },
-      "recommended": [
-        {
-          "regimen": ["Ampicillina (EV)", "Gentamicina"],
-          "setting": "Forme gravi / meningee",
-          "rationale": "Ampicillina è il farmaco di scelta; aminoglicoside per sinergia.",
-          "source": "Linee guida locali / IDSA"
-        },
-        {
-          "regimen": ["Amoxicillina"],
-          "setting": "Forme non complicate in gravidanza",
-          "rationale": "β-lattamico attivo nelle forme non severe.",
-          "source": "Linee guida locali"
-        }
-      ],
-      "notes_on_completion": [
-        "✅ Associazione consigliata: Ampicillina (EV) + Gentamicina nelle forme gravi.",
-        "❌ Le cefalosporine sono inefficaci su Listeria.",
-        "Evitare fluorochinoloni in gravidanza."
-      ]
+  "id": "endocardite_protesica_anziano_001",
+  "title": "Febbre con brividi scuotenti in portatore di protesi valvolare",
+  "vignette": "Uomo di 76 anni, iperteso, con protesi aortica biologica (5 anni). PS per febbre con brividi scuotenti, sudorazioni, dispnea recente e lieve tosse secca. Emocromo: leucocitosi neutrofila; PCR/VES aumentate. Urine: microematuria. RX torace: modesto rinforzo interstiziale. In attesa di emocolture ed ecocardiogramma.",
+  "diagnosis": "Endocardite infettiva su protesi valvolare",
+  "hints": [
+    "Febbre con brividi in portatore di protesi"
+  ],
+  "difficulty": 2,
+  "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "vancomicina", "type": "drug" },
+      { "id": "cefepime", "type": "drug" },
+      { "id": "rifampicina", "type": "drug" }
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Vancomicina", "Cefepime", "Rifampicina"],
+      "setting": "Terapia empirica iniziale in attesa di emocolture (sospetta endocardite su protesi)",
+      "rationale": "Copertura MRSA, streptococchi, HACEK e Gram-negativi non fermentanti.",
+      "source": "Linee guida locali"
     }
+  ],
+  "notes_on_completion": [
+    "Prelevare 3 coppie di emocolture --> De-escalation secondo antibiogramma.",
+    "Eseguire ecocardiogramma transesofageo; valutare complicanze emboliche/valvolari.",
+    "Monitorare funzione renale e livelli di vancomicina.",
+    "Consulto infettivologico/cardiologico; cardiochirurgia se vegetazioni estese o disfunzione protesica."
+  ]
+},
+{
+  "id": "clostridioides_difficile_linfoma_001",
+  "title": "Diarrea emorragica in paziente immunodepresso",
+  "vignette": "Uomo di 28 anni, in follow-up per sospetto linfoma dopo riscontro di ipergammaglobulinemia M e linfoadenopatie diffuse. Accesso in PS per febbre, sudorazioni notturne, astenia, calo ponderale e diarrea acquosa profusa (tracce ematiche). Emocromo: leucocitosi neutrofila. Gli esami mostrano diselettrolitemia e aumento degli indici flogistici. In corso valutazione microbiologica su campione fecale.",
+  "diagnosis": "Sovrainfezione da Clostridioides difficile in paziente immunodepresso",
+  "hints": [
+    "Paziente immunodepresso con diarrea acquosa e tracce di sangue"
+  ],
+  "difficulty": 2,
+  "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "vancomicina", "type": "drug" },
+      { "id": "fidaxomicina", "type": "drug" }
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Sintomatica"],
+      "setting": "Infezione lieve da Clostridioides difficile",
+      "rationale": "Spesso risoluzione naturale in 2-3 settimane",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Vancomicina per os", "Fidaxomicina"],
+      "setting": "Infezione moderata-grave da Clostridioides difficile",
+      "rationale": "Terapia di prima scelta nei casi moderati-gravi per eradicare il C. difficile e ridurre le recidive.",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Vancomicina per os", "Fidaxomicina", "Metronidazolo endovena"],
+      "setting": "Forme gravi o complicate (megacolon tossico, sepsi, perforazione)",
+      "rationale": "Associazione raccomandata nelle forme severe o fulminanti per massimizzare la copertura intestinale e sistemica.",
+      "source": "Linee guida locali"
+    }
+  ],
+  "notes_on_completion": [
+    "Nelle recidive valutare trapianto di microbiota fecale o uso di anticorpi monoclonali anti-tossina B.",
+    "Monitorare segni di megacolon tossico e stato elettrolitico.",
+    "Applicare isolamento enterico e misure igieniche rigorose."
+  ]
+},
+{
+  "id": "colera_viaggio_haiti_001",
+  "title": "Diarrea acquosa profusa dopo viaggio da Haiti",
+  "vignette": "Uomo di 34 anni, rientrato da Haiti da 24 ore. In PS per diarrea acquosa profusa (ad acqua di riso), crampi addominali, sete intensa, astenia marcata e vertigini. Afebbrile. EO: mucose secche, turgore cutaneo ridotto, ipotensione ortostatica; segni di disidratazione severa. Esami in corso per squilibri elettrolitici. In attesa di conferma microbiologica su campione fecale.",
+  "diagnosis": "Colera (Vibrio cholerae) con disidratazione severa",
+  "hints": [
+    "Consumo di piatti a base di pesce locale nei 2 giorni precedenti in area endemica"
+  ],
+  "difficulty": 2,
+  "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "doxiciclina", "type": "drug" },
+      { "id": "azitromicina", "type": "drug" }
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Reidratazione orale (ORS)"],
+      "setting": "Quadri lievi",
+      "rationale": "Correzione rapida delle perdite e degli elettroliti; terapia sintomatica.",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Ringer lattato EV", "Doxiciclina", "oppure Azitromicina/Eritromicina"],
+      "setting": "Quadri moderati",
+      "rationale": "Reintegro idroelettrolitico e antibiotico per ridurre durata e volume delle scariche.",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Ringer lattato EV (aggressivo)", "Doxiciclina", "oppure Azitromicina/Eritromicina"],
+      "setting": "Quadri gravi/shock ipovolemico",
+      "rationale": "Stabilizzazione emodinamica rapida; antibiotico per abbreviare malattia e portata fecale.",
+      "source": "Linee guida locali"
+    }
+  ],
+  "notes_on_completion": [
+    "Correggere prontamente ipokaliemia e acidosi; monitor clinico-lab ravvicinato.",
+    "Isolamento enterico e igiene rigorosa."
+  ]
+},
+{
+  "id": "vap_post_ictus_ltc_001",
+  "title": "Febbre e nuovo addensamento in paziente ventilato",
+  "vignette": "Uomo di 82 anni, residente in RSA, ricoverato per ictus ischemico recente; in ventilazione meccanica da 5 giorni. Compare febbre (38,8 °C), leucocitosi neutrofila e secrezioni tracheali purulente con peggioramento degli scambi. RX torace: nuovo addensamento alveolare al lobo inferiore destro. In attesa di colture da aspirato tracheale/BAL e antibiogramma.",
+  "diagnosis": "Polmonite associata a ventilazione meccanica (VAP)",
+  "hints": [
+    "Insorgenza dopo ≥48 h di ventilazione meccanica",
+    "Nuovo addensamento + febbre, leucocitosi e secrezioni purulente"
+  ],
+  "difficulty": 2,
+  "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "cefepime", "type": "drug" },
+      { "id": "amikacina", "type": "drug" },
+      { "id": "vancomicina", "type": "drug" }
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Cefepime", "Amikacina", "Vancomicina"],
+      "setting": "Terapia empirica iniziale per VAP grave o con fattori di rischio per germi multiresistenti (MDR)",
+      "rationale": "Doppia anti-Pseudomonas (β-lattamico + aminoglicoside) + copertura MRSA. Rivalutare entro 48–72 h e de-escalare su colture/antibiogramma (ridurre/stop aminoglicoside se stabilizzazione).",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Cefepime", "Vancomicina"],
+      "setting": "Terapia empirica iniziale per VAP senza shock né fattori di rischio per MDR",
+      "rationale": "Copertura anti-Pseudomonas con β-lattamico; aggiunta di vancomicina se rischio MRSA. In assenza di rischio MRSA è appropriata la monoterapia con cefepime. De-escalation su colture/antibiogramma.",
+      "source": "Linee guida locali"
+    }
+
+  ],
+  "notes_on_completion": [
+    "Prelevare campioni (aspirato/BAL) prima degli antibiotici; de-escalation su antibiogramma.",
+    "Valutare parametri ventilatori, ossigenazione e complicanze (ascessi, versamento).",
+    "La tripla terapia (Cefepime + Amikacina + Vancomicina) è indicata solo nelle VAP gravi o con rischio di germi multiresistenti (MDR)."
+  ]
+  },
+{
+  "id": "tubercolosi_riattivazione_pakistan_001",
+  "title": "Emottisi recidivante in giovane uomo pakistano",
+  "vignette": "Uomo di 29 anni, pakistano, in Italia da alcuni anni. PS per febbre e tosse con emottisi. Precedente accesso settimane fa per dispnea e febbre. Rx torace: addensamento al lobo medio sinistro. In attesa di esami microbiologici su espettorato.",
+  "diagnosis": "Tubercolosi polmonare in riattivazione",
+  "hints": [
+    "Addensamento polmonare in lobo medio + provenienza geografica suggestiva"
+    ],
+  "difficulty": 2,
+  "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "isoniazide", "type": "drug" },
+      { "id": "da_aggiungere"}
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Isoniazide (INH)", "Rifampicina (RIF)", "Pirazinamide (PZA)", "Etambutolo (EMB)"],
+      "setting": "Fase iniziale — 2 mesi",
+      "rationale": "Schema di induzione standard per TB polmonare farmacosensibile.",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Isoniazide (INH)", "Rifampicina (RIF)"],
+      "setting": "Fase di continuazione — 4 mesi (se farmacosensibile e risposta clinico-microbiologica adeguata)",
+      "rationale": "Consolidamento e prevenzione recidive; prolungare in caso di cavitazioni/coltura ancora positiva al 2° mese secondo prassi locali.",
+      "source": "Linee guida locali"
+    }
+  ],
+  "notes_on_completion": [
+    "Richiedere su espettorato: microscopia AFB, NAAT (es. Xpert MTB/RIF), coltura e test di sensibilità. Eseguire test HIV e valutare comorbidità.",
+    "Isolamento respiratorio e misure di sanità pubblica (notifica e contact tracing) secondo normativa locale.",
+    "Evitare monoterapia: usare sempre combinazioni; verificare aderenza (DOT se indicato).",
+    "Monitorare epatotossicità (INH/RIF/PZA), neurite ottica (EMB) e interazioni della rifampicina.",
+    "Emottisi significativa: angio-TC e possibile embolizzazione arterie bronchiali."
+  ]
+},
+
+{
+  "id": "listeria_gravidanza_neuro_001",
+  "title": "Gastroenterite febbrile in gravidanza con segni neurologici",
+  "vignette": "Donna di oirgine messicana al terzo trimestre con febbre, diarrea e cefalea con lieve confusione mentale, in rapido peggioramento (disdiaconicesia, tremori). In attesa di rachicentesi.",
+  "hints": [
+    "Ha riferito di aver consumato formaggio a pasta molle (queso) nei giorni precedenti"
+  ],
+    "diagnosis": "Listeriosi materna con sospetta meningoencefalite da Listeria monocytogenes",
+    "difficulty": 2,
+    "matching": {
+    "mode": "set",
+    "essentials": [
+      { "id": "ampicillina", "type": "drug" },
+      { "id": "gentamicina", "type": "drug" }
+    ],
+    "allow_extras": false
+  },
+  "recommended": [
+    {
+      "regimen": ["Ampicillina (EV)", "Gentamicina"],
+      "setting": "Forme gravi o meningee",
+      "rationale": "Ampicillina è il farmaco di scelta; attraversa la placenta e copre anche le forme neonatali. L'aminoglicoside è aggiunto per sinergia.",
+      "source": "Linee guida locali"
+    },
+    {
+      "regimen": ["Amoxicillina (orale)"],
+      "setting": "Forme non complicate in gravidanza (gastroenteriche o batteriemiche senza interessamento SNC)",
+      "rationale": "β-lattamico sicuro in gravidanza, attivo su Listeria nelle forme non severe.",
+      "source": "Linee guida locali"
+    }
+  ],
+  "notes_on_completion": [
+    "Associazione Ampicillina + Gentamicina raccomandata nelle forme gravi.",
+    "Le cefalosporine sono inefficaci contro Listeria.",
+    "Evitare fluorochinoloni e trimetoprim-sulfametossazolo in gravidanza.",
+    "Prevenzione: evitare alimenti a rischio (formaggi non pastorizzati, pesce affumicato, insaccati crudi)."
+  ]
+}
+
   ]
 }
