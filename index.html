@@ -18,7 +18,7 @@
   html,body{height:100%}
   body{margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial; --header-h:64px; --toolbar-h:56px; --toolbar-h-active:var(--toolbar-h);}
   .print-only{display:none;}
-  #print-root{display:none;}
+  #print-snapshot{display:none;}
   header{position:sticky; top:0; z-index:5; background:linear-gradient(180deg,var(--bg),rgba(14,17,23,.94)); border-bottom:1px solid var(--border)}
   .wrap{max-width:1200px; margin:0 auto; padding:14px 16px}
   h1{margin:0 0 8px; font-size:18px}
@@ -349,7 +349,7 @@
   }
 
   @media print{
-    @page{margin:12mm 12mm 14mm;}
+    @page{size:A4 portrait; margin:12mm 10mm 16mm;}
     #btnFeedback{display:none !important;}
     .toolbar-pill{display:none !important;}
     html{height:auto !important; min-height:0 !important;}
@@ -363,12 +363,18 @@
       print-color-adjust:exact;
       min-height:0 !important;
     }
-    body.print-snapshot-active > *:not(#print-root){display:none !important;}
-    body.print-snapshot-active #print-root{display:block !important; margin:0 !important; padding:0 !important;}
-    body.print-snapshot-active #print-root,
-    body.print-snapshot-active #print-root *,
-    body.print-snapshot-active #print-root table{height:auto !important; max-height:none !important; overflow:visible !important;}
-    body.print-snapshot-active #print-root table{
+    body.print-snapshot-active > *:not(#print-snapshot){display:none !important;}
+    body.print-snapshot-active #print-snapshot{display:block !important; margin:0 !important; padding:0 !important;}
+    body.print-snapshot-active #print-snapshot,
+    body.print-snapshot-active #print-snapshot *,
+    body.print-snapshot-active #print-snapshot table{height:auto !important; max-height:none !important; overflow:visible !important;}
+    body.print-snapshot-active #print-snapshot{
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      background:#fff;
+      color:#000;
+    }
+    body.print-snapshot-active #print-snapshot table{
       width:100% !important;
       border-collapse:collapse !important;
       border-spacing:0 !important;
@@ -378,13 +384,13 @@
       break-inside:auto;
       border:1px solid #c5ccd8;
     }
-    body.print-snapshot-active #print-root thead{display:table-header-group;}
-    body.print-snapshot-active #print-root tfoot{display:table-footer-group;}
-    body.print-snapshot-active #print-root tr,
-    body.print-snapshot-active #print-root th,
-    body.print-snapshot-active #print-root td{page-break-inside:avoid; break-inside:avoid;}
-    body.print-snapshot-active #print-root th,
-    body.print-snapshot-active #print-root td{
+    body.print-snapshot-active #print-snapshot thead{display:table-header-group;}
+    body.print-snapshot-active #print-snapshot tfoot{display:table-footer-group;}
+    body.print-snapshot-active #print-snapshot tr,
+    body.print-snapshot-active #print-snapshot th,
+    body.print-snapshot-active #print-snapshot td{page-break-inside:avoid; break-inside:avoid;}
+    body.print-snapshot-active #print-snapshot th,
+    body.print-snapshot-active #print-snapshot td{
       padding:9px 12px;
       border-bottom:1px solid #d5dbe4;
       color:#000;
@@ -395,24 +401,24 @@
       -webkit-print-color-adjust:exact;
       print-color-adjust:exact;
     }
-    body.print-snapshot-active #print-root thead tr:not(.print-snapshot-title) th{
+    body.print-snapshot-active #print-snapshot thead tr:not(.print-snapshot-title) th{
       background:#f4f4f4;
       border-bottom:1px solid #c8ced8;
       font-weight:700;
     }
-    body.print-snapshot-active #print-root .print-snapshot-title th{
+    body.print-snapshot-active #print-snapshot .print-snapshot-title th{
       background:#fff;
       border-bottom:1px solid #c8ced8;
       font-size:12px;
       letter-spacing:.02em;
     }
-    body.print-snapshot-active #print-root tbody tr:nth-child(odd){background:#fff;}
-    body.print-snapshot-active #print-root tbody tr:nth-child(even){background:#f1f1f1;}
-    body.print-snapshot-active #print-root tbody tr:hover{background:transparent;}
-    body.print-snapshot-active #print-root td small{color:#333;}
-    body.print-snapshot-active #print-root td b{color:#000;}
-    body.print-snapshot-active #print-root td:last-child{min-width:180px;}
-    body.print-snapshot-active #print-root tfoot td{
+    body.print-snapshot-active #print-snapshot tbody tr:nth-child(odd){background:#fff;}
+    body.print-snapshot-active #print-snapshot tbody tr:nth-child(even){background:#f1f1f1;}
+    body.print-snapshot-active #print-snapshot tbody tr:hover{background:transparent;}
+    body.print-snapshot-active #print-snapshot td small{color:#333;}
+    body.print-snapshot-active #print-snapshot td b{color:#000;}
+    body.print-snapshot-active #print-snapshot td:last-child{min-width:180px;}
+    body.print-snapshot-active #print-snapshot tfoot td{
       padding:8px 12px;
       border-top:1px solid #c8ced8;
       font-size:9px;
@@ -861,7 +867,7 @@
     const ua = window.navigator?.userAgent || '';
     const platform = window.navigator?.platform || '';
     const maxTouchPoints = Number(window.navigator?.maxTouchPoints) || 0;
-    return /iPad|iPhone|iPod/i.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1);
+    return /(iPad|iPhone|iPod|FxiOS|CriOS)/i.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1);
   };
 
   document.title = 'Contagious — MedGramo';
@@ -3153,7 +3159,7 @@
       const sourceTable = document.querySelector('.learn-table');
       if (!sourceTable){ window.print(); return; }
 
-      const existingRoot = document.getElementById('print-root');
+      const existingRoot = document.getElementById('print-snapshot');
       if (existingRoot){ existingRoot.remove(); }
 
       const headerRow = sourceTable.tHead ? sourceTable.tHead.querySelector('tr:not(.print-only)') : null;
@@ -3169,8 +3175,9 @@
       const disclaimerText = disclaimerSource ? disclaimerSource.textContent.trim() : DEFAULT_DISCLAIMER_TEXT;
 
       const printRoot = document.createElement('div');
-      printRoot.id = 'print-root';
+      printRoot.id = 'print-snapshot';
       printRoot.setAttribute('aria-hidden', 'true');
+      printRoot.hidden = true;
 
       const table = document.createElement('table');
       table.className = 'learn-print-table';
@@ -3206,11 +3213,18 @@
 
       printRoot.appendChild(table);
       document.body.appendChild(printRoot);
+      printRoot.hidden = false;
       document.body.classList.add('print-snapshot-active');
 
       let cleanedUp = false;
       const previousAfterPrint = window.onafterprint;
       let fallbackTimer = null;
+      const mediaQueryList = typeof window.matchMedia === 'function' ? window.matchMedia('print') : null;
+      const mediaListener = (event)=>{
+        if (!event.matches){
+          cleanup();
+        }
+      };
 
       const cleanup = ()=>{
         if (cleanedUp) return;
@@ -3219,6 +3233,13 @@
         if (printRoot.parentNode) printRoot.parentNode.removeChild(printRoot);
         document.body.classList.remove('print-snapshot-active');
         window.onafterprint = previousAfterPrint;
+        if (mediaQueryList){
+          if (typeof mediaQueryList.removeEventListener === 'function'){
+            mediaQueryList.removeEventListener('change', mediaListener);
+          } else if (typeof mediaQueryList.removeListener === 'function'){
+            mediaQueryList.removeListener(mediaListener);
+          }
+        }
       };
 
       window.onafterprint = (event)=>{
@@ -3231,6 +3252,14 @@
         }
         cleanup();
       };
+
+      if (mediaQueryList){
+        if (typeof mediaQueryList.addEventListener === 'function'){
+          mediaQueryList.addEventListener('change', mediaListener);
+        } else if (typeof mediaQueryList.addListener === 'function'){
+          mediaQueryList.addListener(mediaListener);
+        }
+      }
 
       fallbackTimer = window.setTimeout(cleanup, 3000);
 
