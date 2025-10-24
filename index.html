@@ -2585,5 +2585,16 @@
   }
 })();
 </script>
+<script>
+(function () {
+  const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+  const isDev  = new URLSearchParams(location.search).has('dev');
+  if (isHttp && !isDev) {
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault(); // blocca il menu tasto destro
+    }, { capture: true });
+  }
+})();
+</script>
 </body>
 </html>
