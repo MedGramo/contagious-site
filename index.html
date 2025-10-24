@@ -885,6 +885,7 @@
   let bugDrugSearchQuery = '';
   const DISCLAIMER_STORAGE_KEY = '__appDisclaimerOverride__';
   const DEFAULT_DISCLAIMER_TEXT = "Uso didattico e non commerciale. Non fornisce diagnosi/terapie; verificare sempre su fonti ufficiali. © 2025 David Vigilanti — MedGramo.";
+  const LEARN_PRINT_DISCLAIMER_HTML = 'Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale: non destinato alla vendita né a fini di lucro. © 2025 David Vigilanti — MedGramo. Leggi la <a href="LICENSE">LICENSE</a>.';
   let disclaimerOverride = '';
 
   /* ===== DOM ===== */
@@ -3360,7 +3361,7 @@
             }).join('')}
           </tbody>
           <tfoot>
-            <tr class="learn-table-disclaimer print-only"><td colspan="5">Strumento formativo: non fornisce diagnosi/terapie. L’utilizzo clinico richiede verifica su fonti ufficiali e responsabilità professionale. Uso non commerciale: non destinato alla vendita né a fini di lucro. © 2025 David Vigilanti — MedGramo. Leggi la <a href="LICENSE">LICENSE</a>.</td></tr>
+            <tr class="learn-table-disclaimer print-only"><td colspan="5">${LEARN_PRINT_DISCLAIMER_HTML}</td></tr>
           </tfoot>
         </table>
       </div>`;
@@ -3389,7 +3390,13 @@
       if (!sourceTable){ window.print(); return; }
 
       const existingRoot = document.getElementById('print-snapshot');
-      if (existingRoot){ existingRoot.remove(); }
+      if (existingRoot){
+        if (typeof existingRoot.remove === 'function'){
+          existingRoot.remove();
+        } else if (existingRoot.parentNode){
+          existingRoot.parentNode.removeChild(existingRoot);
+        }
+      }
 
       const headerRow = sourceTable.tHead ? sourceTable.tHead.querySelector('tr:not(.print-only)') : null;
       let sampleRow = headerRow;
@@ -3401,9 +3408,11 @@
       }
       const columnCount = sampleRow ? sampleRow.cells.length : 5;
       const disclaimerSource = sourceTable.tFoot ? sourceTable.tFoot.querySelector('td') : null;
-      const disclaimerText = disclaimerSource
-        ? disclaimerSource.textContent.trim()
-        : `${DEFAULT_DISCLAIMER_TEXT} Leggi la LICENSE`;
+      const disclaimerHTML = (()=>{
+        if (!disclaimerSource) return LEARN_PRINT_DISCLAIMER_HTML;
+        const html = (disclaimerSource.innerHTML || '').trim();
+        return html || LEARN_PRINT_DISCLAIMER_HTML;
+      })();
 
       const printRoot = document.createElement('div');
       printRoot.id = 'print-snapshot';
@@ -3437,7 +3446,7 @@
       footRow.className = 'print-snapshot-disclaimer';
       const footCell = document.createElement('td');
       footCell.setAttribute('colspan', String(columnCount));
-      footCell.textContent = disclaimerText;
+      footCell.innerHTML = disclaimerHTML;
       footRow.appendChild(footCell);
       tfoot.appendChild(footRow);
       table.appendChild(tfoot);
