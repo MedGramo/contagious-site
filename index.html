@@ -401,10 +401,10 @@
       <select id="filterCluster"><option value="">Cluster: tutti</option></select>
 
       <!-- unico "Sfoglia" per i farmaci; loader clinico dedicato -->
-      <input id="fileDrugs" type="file" accept="application/json,.json" title="Carica farmaci JSON" />
+      <input id="fileDrugs" class="btn-sfoglia" type="file" accept="application/json,.json" title="Carica farmaci JSON" />
       <div id="clinicalLoader" class="clinical-loader">
-        <button type="button" class="btn" id="btnLoadClinical">Carica clinical.json (Clinica)</button>
-        <input id="fileCases" type="file" accept="application/json,.json" title="Carica clinical.json (Clinica)" />
+        <button type="button" class="btn" id="btnLoadClinical">Carica ./data/clinical.json (Clinica)</button>
+        <input id="fileCases" class="btn-sfoglia" type="file" accept="application/json,.json" title="Carica ./data/clinical.json (Clinica)" />
         <div id="clinicalStatus" class="clinical-loader-status"></div>
       </div>
 
@@ -419,13 +419,14 @@
 
 <div id="warnBox" class="warnbox"></div>
 <div id="errorBox" class="error"></div>
+<div id="dataError" hidden style="max-width:1200px;margin:8px auto 0;padding:8px 12px;border:1px solid #553;background:#2a1414;color:#f1c3c3;border-radius:8px;font-size:13px;">Impossibile caricare i dati automatici. Usa i pulsanti “Sfoglia”.</div>
 
 <div id="board" class="board two">
   <section class="col"><h2 id="leftTitle">Farmaci</h2><div id="leftList" class="list"></div></section>
   <section class="col"><h2 id="rightTitle">Cluster</h2><div id="rightList" class="list"></div></section>
 </div>
 
-<p class="foot">Offline. Carica <code>mapping_antibiotici_cluster.json</code> e (per Clinica) <code>clinical.json</code>.
+<p class="foot">Offline. Carica <code>./data/matching.json</code> e (per Clinica) <code>./data/clinical.json</code>.
 ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
 
 <footer id="appDisclaimer" class="app-disclaimer" role="contentinfo"></footer>
@@ -511,7 +512,7 @@
   const clinicalSelections = new Set();
   let clinicalAutoFetchAttempted = false;
   let clinicalDataLoaded = false;
-  let clinicalLoadedFileName = 'clinical.json';
+  let clinicalLoadedFileName = './data/clinical.json';
   // contatori per "Copre"
   const countersInit = new Map();   // drug -> {top:Set, bene:Set, ok:Set}
   const countersHit  = new Map();   // drug -> {top:Set, bene:Set, ok:Set}
@@ -729,7 +730,7 @@
     }
     if (!clinicalStatus) return;
     if (clinicalDataLoaded){
-      const name = clinicalLoadedFileName || 'clinical.json';
+      const name = clinicalLoadedFileName || './data/clinical.json';
       clinicalStatus.textContent = `Caricato: ${name} — Casi: ${CASES.length} — Selezionabili: ${CLINICAL_SELECTABLES.length}`;
       clinicalStatus.style.display = '';
     } else {
@@ -988,23 +989,57 @@
     updateClinicalLoaderStatus();
   }
 
+  function applyMatchingDataset(matching){
+    if (!Array.isArray(matching)){
+      throw new Error('File farmaci: atteso un array.');
+    }
+    DRUGS = matching;
+    buildCounters();
+    prepareFilters();
+    forceResetTherapyState();
+  }
+
+  function initBugDrug(matching){
+    applyMatchingDataset(matching);
+    renderByMode();
+  }
+
+  function initImpara(matching){
+    if (Array.isArray(matching) && matching !== DRUGS){
+      applyMatchingDataset(matching);
+    }
+    renderByMode();
+  }
+
+  function initClinica(clinical){
+    applyClinicalData(clinical);
+    updateClinicalLoaderStatus('./data/clinical.json');
+    renderByMode();
+  }
+
+  if (typeof window !== 'undefined'){
+    window.initBugDrug = initBugDrug;
+    window.initImpara = initImpara;
+    window.initClinica = initClinica;
+  }
+
   function ensureClinicalAutoLoad(){
     if (clinicalAutoFetchAttempted || CLINICAL_SELECTABLES.length) return;
     clinicalAutoFetchAttempted = true;
-    fetch('clinical.json')
+    fetch('./data/clinical.json')
       .then(resp=>{ if (!resp.ok) throw new Error('Not found'); return resp.json(); })
       .then(json=>{
         try {
           applyClinicalData(json);
-          showToast('clinical.json caricato','ok');
-          updateClinicalLoaderStatus('clinical.json');
+          showToast('./data/clinical.json caricato','ok');
+          updateClinicalLoaderStatus('./data/clinical.json');
           renderByMode();
         } catch(err){
-          console.error('Errore caricando clinical.json di default', err);
+          console.error('Errore caricando ./data/clinical.json di default', err);
         }
       })
       .catch(()=>{
-        // opzionale, nessun clinical.json predefinito
+        // opzionale, nessun ./data/clinical.json predefinito
       });
   }
 
@@ -1449,22 +1484,22 @@
     const btnShowDiagnosis = document.getElementById('btnShowDiagnosis');
     const btnShowFullSolution = document.getElementById('btnShowFullSolution');
 
-    if (btnPrev) btnPrev.onclick = ()=>{ if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; } changeClinicalCase(-1); };
-    if (btnNext) btnNext.onclick = ()=>{ if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; } changeClinicalCase(1); };
+    if (btnPrev) btnPrev.onclick = ()=>{ if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; } changeClinicalCase(-1); };
+    if (btnNext) btnNext.onclick = ()=>{ if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; } changeClinicalCase(1); };
     if (btnShuffleCase) btnShuffleCase.onclick = ()=>{
-      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; }
       if (shuffleClinicalCasesInPlace()) showToast('Casi rimescolati','mid');
     };
     if (btnShowHint) btnShowHint.onclick = ()=>{
-      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; }
       showCaseHint(getCurrentClinicalCase());
     };
     if (btnShowDiagnosis) btnShowDiagnosis.onclick = ()=>{
-      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; }
       showCaseDiagnosis(getCurrentClinicalCase());
     };
     if (btnShowFullSolution) btnShowFullSolution.onclick = ()=>{
-      if (!hasCases){ showToast('Carica clinical.json (Clinica)','bad'); return; }
+      if (!hasCases){ showToast('Carica ./data/clinical.json (Clinica)','bad'); return; }
       showCaseFullSolution(getCurrentClinicalCase());
     };
   }
@@ -1942,7 +1977,7 @@
       wireClinicalCaseButtons();
       setupClinicalSlotsPanel(cs);
     } else {
-      leftList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica clinical.json” per avviare la modalità Clinica.</div>`;
+      leftList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica ./data/clinical.json” per avviare la modalità Clinica.</div>`;
       resetClinicalMatchingProgress();
     }
   }
@@ -2083,7 +2118,7 @@
 
   function renderClinicalSelectablesAccordion(){
     if (!CLINICAL_SELECTABLES.length){
-      rightList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica clinical.json” per mostrare i selezionabili.</div>`;
+      rightList.innerHTML = `<div class="item" style="pointer-events:none">Usa il bottone “Carica ./data/clinical.json” per mostrare i selezionabili.</div>`;
       return;
     }
     const items = filterClinicalSelectables();
@@ -2417,6 +2452,91 @@
   /* inizializza filtri (vuoti) e primo render */
   prepareFilters();
   renderByMode();
+})();
+</script>
+<script>
+(()=>{
+  const protocol = window.location?.protocol || '';
+  const isHttp = protocol === 'http:' || protocol === 'https:';
+  const params = new URLSearchParams(window.location?.search || '');
+  const isDev = params.get('dev') === '1';
+  const browseInputs = Array.from(document.querySelectorAll('.btn-sfoglia'));
+  const dataError = document.getElementById('dataError');
+  const toggleBrowse = visible => {
+    browseInputs.forEach(input => {
+      if (!input) return;
+      input.hidden = !visible ? true : false;
+    });
+  };
+  const showBrowse = ()=>toggleBrowse(true);
+  const hideBrowse = ()=>toggleBrowse(false);
+
+  const clearDataError = ()=>{
+    if (!dataError) return;
+    dataError.hidden = true;
+    dataError.textContent = '';
+  };
+  const showDataError = message => {
+    if (!dataError) return;
+    dataError.hidden = false;
+    dataError.textContent = message || 'Impossibile caricare i dati automatici. Usa i pulsanti “Sfoglia”.';
+  };
+
+  if (!isHttp){
+    showBrowse();
+    return;
+  }
+
+  const BUILD = document.documentElement?.getAttribute('data-build')
+    || String(Math.floor(Date.now() / 1000));
+  const makeUrl = path => {
+    const url = new URL(path, window.location.href);
+    url.searchParams.set('v', BUILD);
+    return url.toString();
+  };
+
+  if (isDev){
+    showBrowse();
+  } else {
+    hideBrowse();
+  }
+  clearDataError();
+
+  const matchingUrl = makeUrl('./data/matching.json');
+  const clinicalUrl = makeUrl('./data/clinical.json');
+
+  const fetchJson = url => fetch(url, {cache:'no-store'})
+    .then(resp => {
+      if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`.trim());
+      return resp.json();
+    });
+
+  Promise.all([fetchJson(matchingUrl), fetchJson(clinicalUrl)])
+    .then(([matching, clinical])=>{
+      window.DATA_MATCHING = matching;
+      window.DATA_CLINICAL = clinical;
+      try {
+        if (typeof window.initBugDrug === 'function'){
+          window.initBugDrug(matching);
+        }
+        if (typeof window.initImpara === 'function'){
+          window.initImpara(matching);
+        }
+        if (typeof window.initClinica === 'function'){
+          window.initClinica(clinical);
+        }
+        clearDataError();
+      } catch (err){
+        console.error('Errore inizializzando i dati automatici', err);
+        showBrowse();
+        showDataError('Errore nell’inizializzazione dei dati automatici. Usa i pulsanti “Sfoglia”.');
+      }
+    })
+    .catch(err=>{
+      console.error('Errore nel caricamento automatico dei dati', err);
+      showBrowse();
+      showDataError('Impossibile caricare i dati automatici. Usa i pulsanti “Sfoglia”.');
+    });
 })();
 </script>
 </body>
