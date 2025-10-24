@@ -25,9 +25,9 @@
   .app-title{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .app-title .app-title-text{display:inline-flex; align-items:center; gap:6px;}
   .beta-badge{display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:var(--chip); color:var(--chip-t); font-size:11px; letter-spacing:.02em; text-transform:uppercase;}
-  .coming-soon-button{border:1px solid var(--border); background:#151a22; color:var(--text); border-radius:999px; padding:4px 10px; font-size:12px; line-height:1; cursor:pointer; transition:background .15s ease, border-color .15s ease, color .15s ease;}
-  .coming-soon-button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
-  .coming-soon-button:hover{background:#1b2333; border-color:color-mix(in srgb, var(--border) 70%, transparent);}
+  .coming-soon.button{border:1px solid var(--border); background:#151a22; color:var(--text); border-radius:999px; padding:4px 10px; font-size:12px; line-height:1; cursor:pointer; transition:background .15s ease, border-color .15s ease, color .15s ease;}
+  .coming-soon.button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .coming-soon.button:hover{background:#1b2333; border-color:color-mix(in srgb, var(--border) 70%, transparent);}
   .toolbar{display:grid; grid-template-columns:1fr; gap:8px}
   .toolbar .btn{display:inline-flex; align-items:center; gap:6px; justify-content:flex-start;}
   @media (min-width:980px){
@@ -62,7 +62,7 @@
   .disclaimer-license:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px;}
 
   @media print{
-    .coming-soon-button,
+    .coming-soon.button,
     .coming-soon-layer,
     .screen-only{display:none !important;}
   }
@@ -616,9 +616,9 @@
 <header>
   <div class="wrap">
     <h1 class="app-title">
-      <span class="app-title-text">Contagious 🦠💊 <span class="beta-badge">β-version</span> ©</span>
-      <span class="beta-badge" aria-label="versione beta">β-version</span>
-      <button type="button" id="comingSoonButton" class="coming-soon-button" aria-haspopup="dialog" aria-expanded="false">Coming soon</button>
+      <span class="app-title-text">Contagious 🦠💊</span>
+      <span class="beta-badge" id="betaBadge">β-version</span>
+      <button type="button" id="comingSoonBtn" class="coming-soon button" aria-haspopup="dialog" aria-expanded="false">Coming soon</button>
     </h1>
     <div class="toolbar">
       <label class="pill toolbar-label" for="modeSelect"><span class="toolbar-icon" aria-hidden="true">🎚️</span><span class="toolbar-text">Modalità</span></label>
@@ -949,7 +949,7 @@
   const btnLearnInfo = document.getElementById('btnLearnInfo');
   const learnInfoPopover = document.getElementById('learnInfoPopover');
   const btnLearnInfoClose = document.getElementById('btnLearnInfoClose');
-  const comingSoonButton = document.getElementById('comingSoonButton');
+  const comingSoonButton = document.getElementById('comingSoonBtn');
   const comingSoonLayer = document.getElementById('comingSoonLayer');
   const comingSoonPopover = document.getElementById('comingSoonPopover');
   const comingSoonClose = document.getElementById('comingSoonClose');
