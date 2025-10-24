@@ -31,6 +31,8 @@
   .search{display:flex; gap:8px}
   .search input{flex:1; background:#151a22; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:9px 12px; outline:none}
   .pill{padding:6px 8px; border:1px solid var(--border); background:#151a22; border-radius:999px; color:var(--muted); font-size:12px}
+  .main-scroll{width:100%;}
+  .toolbar-pill{display:none;}
 
   .clinical-loader{display:none; grid-column:1/-1; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#101828; flex-wrap:wrap; gap:10px; align-items:center}
   .clinical-loader .btn{margin:0}
@@ -342,6 +344,7 @@
   @media print{
     @page{margin:12mm 12mm 14mm;}
     #btnFeedback{display:none !important;}
+    .toolbar-pill{display:none !important;}
     html{height:auto !important; min-height:0 !important;}
     body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; min-height:0 !important;}
     body.mode-impara header,
@@ -418,10 +421,17 @@
 
   @media (max-width:740px) and (orientation:landscape),
          (max-height:460px) and (orientation:landscape){
-    body{--toolbar-h:48px; --toolbar-h-active:var(--toolbar-h);}
+    body{--toolbar-h:48px; --toolbar-h-active:var(--toolbar-h); overflow:hidden;}
     body.toolbar-compact-active{--toolbar-h-active:var(--toolbar-h-compact, var(--toolbar-h,48px));}
     body.toolbar-hidden{--toolbar-h-active:0px;}
     header .wrap{padding-top:calc(10px + env(safe-area-inset-top,0px)); padding-bottom:12px;}
+    .main-scroll{display:flex; flex-direction:column; min-height:0; height:calc(100svh - var(--header-h,64px) - var(--toolbar-h-active, var(--toolbar-h,48px)) - env(safe-area-inset-bottom,0px)); overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);}
+    @supports (height:100dvh){
+      .main-scroll{height:calc(100dvh - var(--header-h,64px) - var(--toolbar-h-active, var(--toolbar-h,48px)) - env(safe-area-inset-bottom,0px));}
+    }
+    @supports not (height:100svh){
+      .main-scroll{height:calc(100vh - var(--header-h,64px) - var(--toolbar-h-active, var(--toolbar-h,48px)) - env(safe-area-inset-bottom,0px));}
+    }
     .toolbar{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; align-items:stretch;}
     body.toolbar-compact-active .toolbar{overflow:hidden; transition:height .28s ease, opacity .2s ease, transform .28s ease; transform-origin:top;}
     .toolbar > *{min-width:0;}
@@ -511,20 +521,22 @@
   </div>
 </header>
 
-<button type="button" id="toolbarPill" class="toolbar-pill" hidden aria-label="Mostra toolbar">≡ Toolbar</button>
+<button type="button" id="toolbarPill" class="toolbar-pill" hidden aria-label="Apri toolbar">≡ Toolbar</button>
 
-<div id="warnBox" class="warnbox"></div>
-<div id="errorBox" class="error"></div>
-<div id="dataError" hidden style="max-width:1200px;margin:8px auto 0;padding:8px 12px;border:1px solid #553;background:#2a1414;color:#f1c3c3;border-radius:8px;font-size:13px;">Impossibile caricare i dati automatici. Usa i pulsanti “Sfoglia”.</div>
+<div id="mainScroll" class="main-scroll">
+  <div id="warnBox" class="warnbox"></div>
+  <div id="errorBox" class="error"></div>
+  <div id="dataError" hidden style="max-width:1200px;margin:8px auto 0;padding:8px 12px;border:1px solid #553;background:#2a1414;color:#f1c3c3;border-radius:8px;font-size:13px;">Impossibile caricare i dati automatici. Usa i pulsanti “Sfoglia”.</div>
 
-<div id="board" class="board two">
-  <section class="col"><h2 id="leftTitle">Farmaci</h2><div id="leftList" class="list"></div></section>
-  <section class="col"><h2 id="rightTitle">Cluster</h2><div id="rightList" class="list"></div></section>
+  <div id="board" class="board two">
+    <section class="col"><h2 id="leftTitle">Farmaci</h2><div id="leftList" class="list"></div></section>
+    <section class="col"><h2 id="rightTitle">Cluster</h2><div id="rightList" class="list"></div></section>
+  </div>
+
+  <p class="foot">ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
+
+  <footer id="appDisclaimer" class="app-disclaimer" role="contentinfo"></footer>
 </div>
-
-<p class="foot">ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
-
-<footer id="appDisclaimer" class="app-disclaimer" role="contentinfo"></footer>
 
 <!-- Modal soluzioni -->
 <div id="modal" class="modal" aria-hidden="true">
@@ -738,6 +750,7 @@
   const modeSelect = document.getElementById('modeSelect');
   const toolbar = document.querySelector('.toolbar');
   const toolbarPill = document.getElementById('toolbarPill');
+  const mainScroll = document.getElementById('mainScroll');
   const board = document.getElementById('board');
   const leftTitle  = document.getElementById('leftTitle');
   const rightTitle = document.getElementById('rightTitle');
@@ -799,7 +812,9 @@
   let recentShowGuardUntil = 0;
   let pullStartY = null;
   let pullStartScrollTop = 0;
-  let pullActiveCol = null;
+  let pullActiveEl = null;
+  let scrollContainerLastTop = 0;
+  let scrollContainerListenersAttached = false;
   let columnLastScroll = new WeakMap();
   const columnEventMap = new Map();
   let toolbarResizeObserver = null;
@@ -875,6 +890,24 @@
     }
   };
 
+  const onScrollContainer = ()=>{
+    if (!compactToolbarActive || !mainScroll) return;
+    const previous = scrollContainerLastTop;
+    const current = mainScroll.scrollTop;
+    scrollContainerLastTop = current;
+    if (document.body.classList.contains('toolbar-hidden')) return;
+    if (Date.now() < recentShowGuardUntil) return;
+    if (current <= previous) return;
+    if (current < 28) return;
+    if (hideAfterScrollRaf){
+      cancelAnimationFrame(hideAfterScrollRaf);
+    }
+    hideAfterScrollRaf = requestAnimationFrame(()=>{
+      hideAfterScrollRaf = null;
+      hideToolbar();
+    });
+  };
+
   const onColumnScroll = col=>{
     if (!compactToolbarActive || !col) return;
     const previous = columnLastScroll.get(col) ?? col.scrollTop;
@@ -896,25 +929,46 @@
   const resetPullState = ()=>{
     pullStartY = null;
     pullStartScrollTop = 0;
-    pullActiveCol = null;
+    pullActiveEl = null;
   };
 
-  const onTouchStart = (event, col)=>{
-    if (!compactToolbarActive || !col) return;
+  const onTouchStartContainer = event=>{
+    if (!compactToolbarActive || !mainScroll) return;
     if (!event.touches || event.touches.length !== 1) return;
-    pullActiveCol = col;
+    pullActiveEl = mainScroll;
     pullStartY = event.touches[0].clientY;
-    pullStartScrollTop = col.scrollTop;
+    pullStartScrollTop = mainScroll.scrollTop;
   };
 
-  const onTouchMove = (event, col)=>{
-    if (!compactToolbarActive || !col) return;
-    if (!pullActiveCol || pullActiveCol !== col) return;
+  const onTouchMoveContainer = event=>{
+    if (!compactToolbarActive || !mainScroll) return;
+    if (!pullActiveEl || pullActiveEl !== mainScroll) return;
     if (!event.touches || event.touches.length !== 1) return;
     if (!document.body.classList.contains('toolbar-hidden')) return;
     if (pullStartScrollTop > 2) return;
     const delta = event.touches[0].clientY - pullStartY;
-    if (delta >= 20 && col.scrollTop <= 0){
+    if (delta >= 20 && mainScroll.scrollTop <= 0){
+      showToolbar();
+      resetPullState();
+    }
+  };
+
+  const onTouchStartColumn = (event, col)=>{
+    if (!compactToolbarActive || !col) return;
+    if (!event.touches || event.touches.length !== 1) return;
+    pullActiveEl = col;
+    pullStartY = event.touches[0].clientY;
+    pullStartScrollTop = col.scrollTop;
+  };
+
+  const onTouchMoveColumn = (event, col)=>{
+    if (!compactToolbarActive || !col) return;
+    if (!pullActiveEl || pullActiveEl !== col) return;
+    if (!event.touches || event.touches.length !== 1) return;
+    if (!document.body.classList.contains('toolbar-hidden')) return;
+    if (pullStartScrollTop > 2) return;
+    const delta = event.touches[0].clientY - pullStartY;
+    if (delta >= 20 && col.scrollTop <= 0 && (!mainScroll || mainScroll.scrollTop <= 0)){
       showToolbar();
       resetPullState();
     }
@@ -922,6 +976,29 @@
 
   const onTouchEnd = ()=>{
     resetPullState();
+  };
+
+  const detachScrollContainerListeners = ()=>{
+    if (!mainScroll || !scrollContainerListenersAttached) return;
+    mainScroll.removeEventListener('scroll', onScrollContainer);
+    mainScroll.removeEventListener('touchstart', onTouchStartContainer);
+    mainScroll.removeEventListener('touchmove', onTouchMoveContainer);
+    mainScroll.removeEventListener('touchend', onTouchEnd);
+    mainScroll.removeEventListener('touchcancel', onTouchEnd);
+    scrollContainerListenersAttached = false;
+    scrollContainerLastTop = 0;
+    resetPullState();
+  };
+
+  const attachScrollContainerListeners = ()=>{
+    if (!mainScroll || scrollContainerListenersAttached) return;
+    mainScroll.addEventListener('scroll', onScrollContainer, {passive:true});
+    mainScroll.addEventListener('touchstart', onTouchStartContainer, {passive:true});
+    mainScroll.addEventListener('touchmove', onTouchMoveContainer, {passive:true});
+    mainScroll.addEventListener('touchend', onTouchEnd, {passive:true});
+    mainScroll.addEventListener('touchcancel', onTouchEnd, {passive:true});
+    scrollContainerLastTop = mainScroll.scrollTop || 0;
+    scrollContainerListenersAttached = true;
   };
 
   const detachColumnListeners = ()=>{
@@ -945,8 +1022,8 @@
     columns.forEach(col=>{
       const handlers = {
         scroll: ()=>onColumnScroll(col),
-        touchstart: event=>onTouchStart(event, col),
-        touchmove: event=>onTouchMove(event, col),
+        touchstart: event=>onTouchStartColumn(event, col),
+        touchmove: event=>onTouchMoveColumn(event, col),
         touchend: ()=>onTouchEnd()
       };
       columnEventMap.set(col, handlers);
@@ -976,6 +1053,7 @@
       toolbar.style.removeProperty('height');
     }
     updateToolbarMetrics();
+    attachScrollContainerListeners();
     attachColumnListeners();
     if (typeof ResizeObserver === 'function' && toolbar){
       toolbarResizeObserver = new ResizeObserver(()=>{ updateToolbarMetrics(); });
@@ -997,6 +1075,7 @@
       toolbar.style.removeProperty('height');
     }
     document.body.style.removeProperty('--toolbar-h-compact');
+    detachScrollContainerListeners();
     detachColumnListeners();
     if (toolbarResizeObserver){
       toolbarResizeObserver.disconnect();
