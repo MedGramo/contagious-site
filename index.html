@@ -318,12 +318,13 @@
   .mode-impara .clinical-loader{display:none !important;}
 
   .mode-impara .toolbar{gap:10px; flex-wrap:wrap;}
-  .mode-impara .toolbar > *:not(.search):not(#btnPrintPDF):not(#btnLearnInfo):not(.pill):not(#modeSelect){display:none;}
+  .mode-impara .toolbar > *:not(.search):not(#btnPrintPDF):not(#btnLearnInfo):not(#btnFeedback):not(.pill):not(#modeSelect){display:none;}
   .mode-impara .toolbar .pill,
   .mode-impara .toolbar #modeSelect{order:-1;}
   .mode-impara .search{flex:1 1 260px;}
   .mode-impara #btnPrintPDF{order:1;}
   .mode-impara #btnLearnInfo{order:2;}
+  .mode-impara #btnFeedback{order:3;}
   .learn-info-popover{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200; padding:24px; background:rgba(6,8,12,.55);}
   .learn-info-popover.show{display:flex;}
   .learn-info-card{max-width:360px; width:100%; background:#182237; color:#dce6ff; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:18px 20px; box-shadow:0 20px 48px rgba(0,0,0,.45);}
@@ -340,6 +341,7 @@
 
   @media print{
     @page{margin:12mm 12mm 14mm;}
+    #btnFeedback{display:none !important;}
     html{height:auto;}
     body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     body.mode-impara header,
@@ -352,7 +354,8 @@
     body.mode-impara #modal,
     body.mode-impara #backdrop,
     body.mode-impara .learn-info-popover,
-    body.mode-impara #btnLearnInfo{display:none !important;}
+    body.mode-impara #btnLearnInfo,
+    body.mode-impara #btnFeedback{display:none !important;}
     body.mode-impara .board{display:block !important; margin:0; padding:0; background:none; box-shadow:none; max-width:none; overflow:visible !important; width:100%;}
     body.mode-impara .board.two{grid-template-columns:none;}
     body.mode-impara .board .col{display:block; width:100%; max-width:none; padding:0; margin:0; border:none; background:none; box-shadow:none; overflow:visible !important; height:auto !important;}
@@ -411,8 +414,9 @@
       <!-- 👀 Soluzioni rimosso -->
       <button class="btn" id="btnReshuffleTop">🔁 Reshuffle</button>
       <button class="btn" id="btnReset">🧹 Reset</button>
+      <a class="btn" id="btnFeedback" href="https://forms.gle/8vPSVRSj8ResCwZZ9" target="_blank" rel="noopener noreferrer">📝 Lascia un feedback!</a>
       <button class="btn" id="btnPrintPDF">🖨️ Stampa PDF</button>
-      <button class="btn" id="btnLearnInfo">ℹ️ Informazioni</button>
+      <button class="btn" id="btnLearnInfo">ℹ️ Info</button>
     </div>
   </div>
 </header>
@@ -426,8 +430,7 @@
   <section class="col"><h2 id="rightTitle">Cluster</h2><div id="rightList" class="list"></div></section>
 </div>
 
-<p class="foot">Offline. Carica <code>./data/matching.json</code> e (per Clinica) <code>./data/clinical.json</code>.
-ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
+<p class="foot">ⓘ Clic sull’icona <b>ⓘ</b> in una card per vedere la “Soluzione”.</p>
 
 <footer id="appDisclaimer" class="app-disclaimer" role="contentinfo"></footer>
 
