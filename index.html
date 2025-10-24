@@ -342,8 +342,8 @@
   @media print{
     @page{margin:12mm 12mm 14mm;}
     #btnFeedback{display:none !important;}
-    html{height:auto;}
-    body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    html{height:auto !important; min-height:0 !important;}
+    body.mode-impara{background:#fff; color:#000; font:13px/1.45 "Helvetica Neue",Arial,sans-serif; padding:0; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; min-height:0 !important;}
     body.mode-impara header,
     body.mode-impara .toolbar,
     body.mode-impara #warnBox,
@@ -356,29 +356,40 @@
     body.mode-impara .learn-info-popover,
     body.mode-impara #btnLearnInfo,
     body.mode-impara #btnFeedback{display:none !important;}
-    body.mode-impara .board{display:block !important; margin:0; padding:0; background:none; box-shadow:none; max-width:none; overflow:visible !important; width:100%;}
+    body.mode-impara header,
+    body.mode-impara header *,
+    body.mode-impara .wrap,
+    body.mode-impara #board,
+    body.mode-impara .board,
+    body.mode-impara .board .col,
+    body.mode-impara .board .list,
+    body.mode-impara .learn-table-wrap{position:static !important; top:auto !important; height:auto !important; max-height:none !important; min-height:0 !important; overflow:visible !important;}
+    body.mode-impara .wrap{padding:0 !important; margin:0 auto !important;}
+    body.mode-impara .board{display:block !important; margin:0; padding:0; background:none; box-shadow:none; max-width:none; width:100%;}
     body.mode-impara .board.two{grid-template-columns:none;}
     body.mode-impara .board .col{display:block; width:100%; max-width:none; padding:0; margin:0; border:none; background:none; box-shadow:none; overflow:visible !important; height:auto !important;}
     body.mode-impara .board .col + .col{display:none;}
     body.mode-impara .board h2{display:none !important;}
-    body.mode-impara .list{display:block; height:auto !important; max-height:none !important; min-height:0 !important; overflow:visible !important; padding:0; width:100%;}
-    body.mode-impara .learn-table-wrap{display:block; height:auto !important; max-height:none !important; overflow:visible !important; border:1px solid #c5ccd8; border-radius:6px; background:#fff; box-shadow:none; margin:0; width:100%;}
-    body.mode-impara .learn-table{width:100%; min-width:0; border-collapse:separate; background:#fff; color:#000;}
+    body.mode-impara .list{display:block; padding:0; width:100%;}
+    body.mode-impara .learn-table-wrap{display:block; border:1px solid #c5ccd8; border-radius:6px; background:#fff; box-shadow:none; margin:0; width:100%;}
+    body.mode-impara .learn-table{width:100% !important; min-width:0; border-collapse:separate; background:#fff; color:#000; page-break-inside:auto; break-inside:auto; table-layout:auto;}
     body.mode-impara .learn-table thead{display:table-header-group;}
-    body.mode-impara .learn-table thead th{position:static !important; top:auto !important; background:#f4f4f4; color:#000; border-bottom:1px solid #c8ced8; font-weight:700;}
+    body.mode-impara .learn-table thead th{position:static !important; top:auto !important; background:#f4f4f4; color:#000; border-bottom:1px solid #c8ced8; font-weight:700; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     body.mode-impara .learn-table th,
-    body.mode-impara .learn-table td{padding:9px 12px; border-bottom:1px solid #d5dbe4; color:#000; vertical-align:top; word-break:break-word;}
-    body.mode-impara .learn-table tbody tr:nth-child(odd){background:#fff;}
-    body.mode-impara .learn-table tbody tr:nth-child(even){background:#f1f1f1;}
+    body.mode-impara .learn-table td{padding:9px 12px; border-bottom:1px solid #d5dbe4; color:#000; vertical-align:top; word-break:break-word; white-space:normal !important; page-break-inside:avoid; break-inside:avoid;}
+    body.mode-impara .learn-table tbody{display:table-row-group;}
+    body.mode-impara .learn-table tbody tr{break-inside:avoid; page-break-inside:avoid;}
+    body.mode-impara .learn-table tbody tr:nth-child(odd){background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    body.mode-impara .learn-table tbody tr:nth-child(even){background:#f1f1f1; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     body.mode-impara .learn-table tbody tr:hover{background:transparent;}
     body.mode-impara .learn-table td small{color:#333;}
     body.mode-impara .learn-table td b{color:#000;}
-    body.mode-impara .learn-table tbody tr{break-inside:avoid; page-break-inside:avoid;}
     body.mode-impara .learn-table td:last-child{min-width:180px;}
     body.mode-impara .learn-table thead .print-only th{background:#fff; border-bottom:1px solid #c8ced8; font-size:12px; letter-spacing:.02em;}
-    body.mode-impara .learn-table tfoot td{padding:8px 12px; border-top:1px solid #c8ced8; font-size:10px; line-height:1.45; font-weight:600; color:#000; background:#fff;}
+    body.mode-impara .learn-table tfoot{display:table-footer-group !important;}
+    body.mode-impara .learn-table tfoot td{padding:8px 12px; border-top:1px solid #c8ced8; font-size:9px; line-height:1.45; font-weight:600; color:#333; background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     .print-only{display:table-row;}
-    tfoot.print-only{display:table-footer-group;}
+    tfoot.print-only{display:table-footer-group !important;}
   }
 
   @media (max-width:1024px) and (orientation:portrait){
