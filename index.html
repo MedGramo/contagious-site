@@ -2572,5 +2572,18 @@
     });
 })();
 </script>
+<script>
+(function () {
+  const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+  const isDev  = new URLSearchParams(location.search).has('dev');
+  if (isHttp && !isDev) {
+    var s = document.createElement('script');
+    s.defer = true;
+    s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    s.setAttribute('data-cf-beacon', '{"token":"00a2c55a784b42d6a389648ba282e7c4"}');
+    document.head.appendChild(s);
+  }
+})();
+</script>
 </body>
 </html>
