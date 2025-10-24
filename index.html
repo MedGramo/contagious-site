@@ -23,6 +23,7 @@
   .wrap{max-width:1200px; margin:0 auto; padding:14px 16px}
   h1{margin:0 0 8px; font-size:18px}
   .toolbar{display:grid; grid-template-columns:1fr; gap:8px}
+  .toolbar .btn{display:inline-flex; align-items:center; gap:6px; justify-content:flex-start;}
   @media (min-width:980px){
     .toolbar{grid-template-columns:auto auto 1fr auto auto; align-items:center}
   }
@@ -34,6 +35,11 @@
   .pill{padding:6px 8px; border:1px solid var(--border); background:#151a22; border-radius:999px; color:var(--muted); font-size:12px}
   .main-scroll{width:100%;}
   .toolbar-pill{display:none;}
+  .toolbar-label{display:inline-flex; align-items:center; gap:6px;}
+  .toolbar-label .toolbar-icon{display:none;}
+  .toolbar-icon{display:inline-flex; align-items:center; justify-content:center; line-height:1;}
+  .toolbar-text{display:inline;}
+  .toolbar-compact-toggle{display:none;}
 
   .clinical-loader{display:none; grid-column:1/-1; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#101828; flex-wrap:wrap; gap:10px; align-items:center}
   .clinical-loader .btn{margin:0}
@@ -504,7 +510,9 @@
     @supports not (height:100svh){
       .main-scroll{height:calc(100vh - var(--header-h,64px) - var(--toolbar-h-active, var(--toolbar-h,48px)) - env(safe-area-inset-bottom,0px));}
     }
-    .toolbar{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; align-items:stretch;}
+    .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:6px; align-items:stretch;}
+    .toolbar-compact-toggle{display:inline-flex; align-items:center; justify-content:center; padding:6px 10px; min-height:40px; font-size:13px; line-height:1.3; border-radius:8px; gap:4px;}
+    .toolbar-compact-toggle .toolbar-icon{font-size:16px;}
     body.toolbar-compact-active .toolbar{overflow:hidden; transition:height .28s ease, opacity .2s ease, transform .28s ease; transform-origin:top;}
     .toolbar > *{min-width:0;}
     .toolbar .pill{padding:4px 8px; font-size:11px; line-height:1.2; align-self:center;}
@@ -542,6 +550,21 @@
       body.mode-impara .learn-table-wrap{max-height:calc(100vh - var(--header-h,64px) - var(--toolbar-h-active, var(--toolbar-h,48px)) - 12px);}
     }
     body.mode-impara .learn-table{min-width:0;}
+    .toolbar.toolbar--compact{gap:4px; padding:2px 0;}
+    .toolbar.toolbar--compact .toolbar-label{position:relative; justify-content:center;}
+    .toolbar.toolbar--compact .toolbar-label .toolbar-icon{display:inline-flex;}
+    .toolbar.toolbar--compact .toolbar-text{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;}
+    .toolbar.toolbar--compact .btn,
+    .toolbar.toolbar--compact select,
+    .toolbar.toolbar--compact input[type="file"],
+    .toolbar.toolbar--compact .search input,
+    .toolbar.toolbar--compact .toolbar-compact-toggle{padding:4px 6px;}
+    .toolbar.toolbar--compact .btn,
+    .toolbar.toolbar--compact .toolbar-compact-toggle{gap:0;}
+    .toolbar.toolbar--compact .btn .toolbar-icon,
+    .toolbar.toolbar--compact .toolbar-compact-toggle .toolbar-icon{font-size:18px;}
+    .toolbar.toolbar--compact .btn,
+    .toolbar.toolbar--compact .toolbar-compact-toggle{justify-content:center;}
   }
 
   @media (max-width:740px) and (orientation:landscape) and (prefers-reduced-motion:reduce),
@@ -560,7 +583,7 @@
   <div class="wrap">
     <h1>Contagious 🦠💊©</h1>
     <div class="toolbar">
-      <label class="pill">Modalità</label>
+      <label class="pill toolbar-label" for="modeSelect"><span class="toolbar-icon" aria-hidden="true">🎚️</span><span class="toolbar-text">Modalità</span></label>
       <select id="modeSelect">
         <option value="covers">Bug-Drug</option>
         <option value="clinical">Clinica</option>
@@ -580,11 +603,12 @@
       </div>
 
       <!-- 👀 Soluzioni rimosso -->
-      <button class="btn" id="btnReshuffleTop">🔁 Reshuffle</button>
-      <button class="btn" id="btnReset">🧹 Reset</button>
-      <a class="btn" id="btnFeedback" href="https://forms.gle/8vPSVRSj8ResCwZZ9" target="_blank" rel="noopener noreferrer">📝 Lascia un feedback!</a>
-      <button class="btn" id="btnPrintPDF">🖨️ Stampa PDF</button>
-      <button class="btn" id="btnLearnInfo">ℹ️ Info</button>
+      <button class="btn" id="btnReshuffleTop" type="button" aria-label="Reshuffle" title="Reshuffle"><span class="toolbar-icon" aria-hidden="true">🔁</span><span class="toolbar-text">Reshuffle</span></button>
+      <button class="btn" id="btnReset" type="button" aria-label="Reset" title="Reset"><span class="toolbar-icon" aria-hidden="true">🧹</span><span class="toolbar-text">Reset</span></button>
+      <a class="btn" id="btnFeedback" href="https://forms.gle/8vPSVRSj8ResCwZZ9" target="_blank" rel="noopener noreferrer" aria-label="Lascia un feedback!" title="Lascia un feedback!"><span class="toolbar-icon" aria-hidden="true">📝</span><span class="toolbar-text">Lascia un feedback!</span></a>
+      <button class="btn" id="btnPrintPDF" type="button" aria-label="Stampa PDF" title="Stampa PDF"><span class="toolbar-icon" aria-hidden="true">🖨️</span><span class="toolbar-text">Stampa PDF</span></button>
+      <button class="btn" id="btnLearnInfo" type="button" aria-label="Info" title="Info"><span class="toolbar-icon" aria-hidden="true">ℹ️</span><span class="toolbar-text">Info</span></button>
+      <button class="btn toolbar-compact-toggle" id="toolbarCompactToggle" type="button" aria-label="Riduci toolbar" aria-pressed="false" title="Riduci toolbar"><span class="toolbar-icon" aria-hidden="true">⤢</span><span class="toolbar-text">Riduci barra</span></button>
     </div>
     <div class="rotate-hint" hidden>
       <span>🔄 Ruota il dispositivo per vedere i pannelli affiancati.</span>
@@ -822,6 +846,9 @@
   const modeSelect = document.getElementById('modeSelect');
   const toolbar = document.querySelector('.toolbar');
   const toolbarPill = document.getElementById('toolbarPill');
+  const toolbarCompactToggle = document.getElementById('toolbarCompactToggle');
+  const toolbarCompactToggleIcon = toolbarCompactToggle ? toolbarCompactToggle.querySelector('.toolbar-icon') : null;
+  const toolbarCompactToggleText = toolbarCompactToggle ? toolbarCompactToggle.querySelector('.toolbar-text') : null;
   const mainScroll = document.getElementById('mainScroll');
   const board = document.getElementById('board');
   const leftTitle  = document.getElementById('leftTitle');
@@ -898,6 +925,64 @@
   const columnEventMap = new Map();
   let toolbarResizeObserver = null;
   let metricsRaf = null;
+  const TOOLBAR_VISUAL_COMPACT_KEY = '__toolbarCompactCollapsed__';
+  const getSessionStorageSafe = ()=>{
+    try {
+      return window.sessionStorage || null;
+    } catch (err){
+      return null;
+    }
+  };
+  let toolbarCollapsed = false;
+
+  const persistToolbarCollapsedPreference = collapsed=>{
+    const storage = getSessionStorageSafe();
+    if (!storage) return;
+    try {
+      storage.setItem(TOOLBAR_VISUAL_COMPACT_KEY, collapsed ? '1' : '0');
+    } catch (err){
+      // storage non disponibile
+    }
+  };
+
+  const readToolbarCollapsedPreference = ()=>{
+    const storage = getSessionStorageSafe();
+    if (!storage) return false;
+    try {
+      return storage.getItem(TOOLBAR_VISUAL_COMPACT_KEY) === '1';
+    } catch (err){
+      return false;
+    }
+  };
+
+  const applyToolbarCollapsedPresentation = collapsed=>{
+    toolbarCollapsed = !!collapsed;
+    if (toolbar){
+      toolbar.classList.toggle('toolbar--compact', toolbarCollapsed);
+    }
+    if (toolbarCompactToggle){
+      const label = toolbarCollapsed ? 'Espandi toolbar' : 'Riduci toolbar';
+      toolbarCompactToggle.setAttribute('aria-pressed', toolbarCollapsed ? 'true' : 'false');
+      toolbarCompactToggle.setAttribute('aria-label', label);
+      toolbarCompactToggle.setAttribute('title', label);
+    }
+    if (toolbarCompactToggleIcon){
+      toolbarCompactToggleIcon.textContent = toolbarCollapsed ? '▴' : '⤢';
+    }
+    if (toolbarCompactToggleText){
+      toolbarCompactToggleText.textContent = toolbarCollapsed ? 'Espandi barra' : 'Riduci barra';
+    }
+  };
+
+  const setToolbarCollapsed = (collapsed, {persist=true, skipMetrics=false}={})=>{
+    applyToolbarCollapsedPresentation(collapsed);
+    if (!skipMetrics && compactToolbarActive){
+      updateToolbarMetrics();
+    }
+    if (persist){
+      persistToolbarCollapsedPreference(toolbarCollapsed);
+    }
+  };
 
   const isCompactToolbarMode = ()=>compactToolbarQueries.some(q=>q && q.matches);
 
@@ -1124,6 +1209,8 @@
       toolbarPill.hidden = true;
       toolbarPill.setAttribute('aria-hidden','true');
     }
+    const storedCollapsed = readToolbarCollapsedPreference();
+    setToolbarCollapsed(storedCollapsed, {persist:false, skipMetrics:true});
     const initialHeight = computeToolbarHeight();
     if (initialHeight){
       toolbar.style.height = `${initialHeight}px`;
@@ -1146,6 +1233,7 @@
     compactToolbarActive = false;
     document.body.classList.remove('toolbar-compact-active');
     document.body.classList.remove('toolbar-hidden');
+    setToolbarCollapsed(false, {persist:false, skipMetrics:true});
     if (toolbarPill){
       toolbarPill.hidden = true;
       toolbarPill.setAttribute('aria-hidden','true');
@@ -1185,6 +1273,18 @@
   if (toolbarPill){
     toolbarPill.addEventListener('click', ()=>{
       showToolbar();
+    });
+  }
+
+  if (toolbarCompactToggle){
+    toolbarCompactToggle.addEventListener('click', ()=>{
+      if (!compactToolbarActive){
+        const next = !toolbarCollapsed;
+        toolbarCollapsed = next;
+        persistToolbarCollapsedPreference(next);
+        return;
+      }
+      setToolbarCollapsed(!toolbarCollapsed);
     });
   }
 
