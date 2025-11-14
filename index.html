@@ -616,6 +616,7 @@
 <header>
   <div class="wrap">
     <h1 class="app-title">
+      <a href="./home.html" style="color:inherit; text-decoration:none; font-weight:600;">🏠 Home</a>
       <span class="app-title-text">Contagious 🦠💊</span>
       <span class="beta-badge" id="betaBadge">β-version</span>
       <button type="button" id="comingSoonBtn" class="coming-soon button" aria-haspopup="dialog" aria-expanded="false">Coming soon</button>
@@ -907,6 +908,65 @@
   const leftList   = document.getElementById('leftList');
   const rightList  = document.getElementById('rightList');
   const disclaimerEl = document.getElementById('appDisclaimer');
+
+  const VALID_MODES = new Set(['covers','clinical','learn']);
+  const MODE_URL_MAP = {
+    'bug-drug': 'covers',
+    'bugdrug': 'covers',
+    'covers': 'covers',
+    'clinica': 'clinical',
+    'clinical': 'clinical',
+    'impara': 'learn',
+    'learn': 'learn'
+  };
+  const MODE_STORAGE_KEY = '__contagious_last_mode__';
+
+  const readStoredMode = ()=>{
+    const storage = getStorage();
+    if (!storage) return '';
+    const value = storage.getItem(MODE_STORAGE_KEY) || '';
+    return VALID_MODES.has(value) ? value : '';
+  };
+
+  const writeStoredMode = value => {
+    if (!VALID_MODES.has(value)) return;
+    const storage = getStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(MODE_STORAGE_KEY, value);
+    } catch (err){
+      /* ignore storage errors */
+    }
+  };
+
+  const resolveRequestedMode = ()=>{
+    try {
+      const params = new URLSearchParams(window.location?.search || '');
+      const raw = (params.get('mode') || '').toLowerCase();
+      if (!raw) return '';
+      const mapped = MODE_URL_MAP[raw];
+      return mapped && VALID_MODES.has(mapped) ? mapped : '';
+    } catch (err){
+      return '';
+    }
+  };
+
+  const requestedMode = resolveRequestedMode();
+  if (requestedMode){
+    MODE = requestedMode;
+  } else {
+    const storedMode = readStoredMode();
+    if (storedMode) MODE = storedMode;
+  }
+
+  if (!VALID_MODES.has(MODE)){
+    MODE = 'covers';
+  }
+
+  if (modeSelect){
+    modeSelect.value = MODE;
+  }
+  writeStoredMode(MODE);
 
   const isIOSDevice = ()=>{
     const ua = window.navigator?.userAgent || '';
@@ -2707,7 +2767,11 @@
   }
 
   /* ===== Modalità ===== */
-  modeSelect.onchange = ()=>{ MODE = modeSelect.value; renderByMode(); };
+  modeSelect.onchange = ()=>{
+    MODE = modeSelect.value;
+    writeStoredMode(MODE);
+    renderByMode();
+  };
 
   function renderByMode(){
     if (rootContainer){
