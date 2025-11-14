@@ -17,42 +17,140 @@
   }
 })();
 </script>
+<style>
+  .hub-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .hub-card {
+    background: none;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .hub-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 64px;
+    border: none;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .hub-button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+  }
+  .hub-button:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 4px;
+  }
+  .hub-button--infectious { background:#00B894; }
+  .hub-button--micro { background:#E74C3C; }
+  .hub-button--pharma { background:#2980B9; }
+  .hub-button--feedback { background:#F1C40F; color:#0e1117; }
+  .hub-description {
+    margin: 0;
+    color: #bcc4da;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .hub-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .hub-links a {
+    color: #7aa2ff;
+    text-decoration: none;
+  }
+  .hub-card--infectious { grid-area: infectious; }
+  .hub-card--micro { grid-area: micro; }
+  .hub-card--pharma { grid-area: pharma; }
+  .hub-card--feedback { grid-area: feedback; }
+  .hub-placeholder {
+    grid-area: mascot;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(8px, 3vw, 16px);
+  }
+  .hub-placeholder img {
+    width: min(220px, 60vw);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  @media (min-width: 700px) {
+    .hub-grid {
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .hub-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(120px, auto));
+      grid-template-areas:
+        "infectious mascot micro"
+        ". mascot ."
+        "pharma mascot feedback";
+      min-height: min(520px, calc(100vh - 260px));
+      align-content: center;
+    }
+    .hub-grid > * {
+      height: 100%;
+    }
+  }
+</style>
 </head>
 <body style="margin:0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:#0e1117; color:#e8ecf3; min-height:100vh; display:flex; flex-direction:column;">
 <header style="padding:32px 16px 24px; text-align:center;">
-  <h1 style="margin:0; font-size:28px; letter-spacing:0.01em;">Contagious ©</h1>
+  <h1 style="margin:0; font-size:28px; letter-spacing:0.01em;">Contagious</h1>
 </header>
 <main style="flex:1; width:100%; max-width:960px; margin:0 auto; padding:0 16px 48px; display:flex; flex-direction:column; gap:32px;">
-  <section style="display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
-    <article style="background:#151a22; border:1px solid #262b36; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-      <div>
-        <h2 style="margin:0 0 12px; font-size:20px;">Malattie Infettive</h2>
-        <p style="margin:0; color:#bcc4da; font-size:15px; line-height:1.5;">Accedi subito all'app principale per le modalità Bug-Drug, Clinica e Impara.</p>
-      </div>
-      <a href="./index.html?mode=bug-drug" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:999px; background:#7aa2ff; color:#0e1117; font-weight:600; text-decoration:none;">Entra nell'app</a>
-      <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:14px;">
-        <a href="./index.html?mode=clinica" style="color:#7aa2ff; text-decoration:none;">Clinica →</a>
-        <a href="./index.html?mode=impara" style="color:#7aa2ff; text-decoration:none;">Impara →</a>
+  <section class="hub-grid">
+    <article class="hub-card hub-card--infectious">
+      <a href="./index.html?mode=bug-drug" class="hub-button hub-button--infectious">Malattie Infettive</a>
+      <p class="hub-description">Accedi all'app principale per Bug-Drug, Clinica e Impara.</p>
+      <div class="hub-links">
+        <a href="./index.html?mode=clinica">Clinica &rarr;</a>
+        <a href="./index.html?mode=impara">Impara &rarr;</a>
       </div>
     </article>
-    <article style="background:#151a22; border:1px solid #262b36; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-      <div>
-        <h2 style="margin:0 0 12px; font-size:20px;">Farmacologia</h2>
-        <p style="margin:0; color:#bcc4da; font-size:15px; line-height:1.5;">Approfondimenti e strumenti dedicati alla farmacologia.</p>
-      </div>
-      <a href="./pharma/" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:999px; background:#20283a; color:#e8ecf3; font-weight:600; text-decoration:none;">Coming soon</a>
+    <article class="hub-card hub-card--micro">
+      <a href="./micro/" class="hub-button hub-button--micro">Microbiologia</a>
+      <p class="hub-description">Moduli e panoramiche sulla microbiologia. Coming soon.</p>
     </article>
-    <article style="background:#151a22; border:1px solid #262b36; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
-      <div>
-        <h2 style="margin:0 0 12px; font-size:20px;">Microbiologia</h2>
-        <p style="margin:0; color:#bcc4da; font-size:15px; line-height:1.5;">Panoramiche e moduli interattivi sulla microbiologia.</p>
-      </div>
-      <a href="./micro/" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:999px; background:#20283a; color:#e8ecf3; font-weight:600; text-decoration:none;">Coming soon</a>
+    <article class="hub-card hub-card--pharma">
+      <a href="./pharma/" class="hub-button hub-button--pharma">Farmacologia</a>
+      <p class="hub-description">Approfondimenti e strumenti dedicati ai farmaci. Coming soon.</p>
     </article>
+    <article class="hub-card hub-card--feedback">
+      <a href="https://forms.gle/8vPSVRSj8ResCwZZ9" class="hub-button hub-button--feedback" target="_blank" rel="noopener noreferrer">Lascia un feedback</a>
+      <p class="hub-description">Apri il modulo Google Form per inviare suggerimenti.</p>
+    </article>
+    <div class="hub-placeholder">
+      <img src="./assets/mascotte.png" alt="Mascotte Contagious">
+    </div>
   </section>
 </main>
 <footer style="padding:24px 16px 32px; text-align:center; font-size:13px; color:#bcc4da;">
-  <p style="margin:0; line-height:1.5;">Uso didattico e non commerciale. Non fornisce diagnosi/terapie; verificare sempre su fonti ufficiali. © 2025 David Vigilanti — MedGramo. Leggi la <a href="./LICENSE" style="color:#7aa2ff;">LICENSE</a>.</p>
+  <p style="margin:0; line-height:1.5;">Uso didattico e non commerciale. Non fornisce diagnosi/terapie; verificare sempre su fonti ufficiali. &copy; 2025 David Vigilanti - MedGramo. Leggi la <a href="./LICENSE" style="color:#7aa2ff;">LICENSE</a>.</p>
 </footer>
 </body>
 </html>
