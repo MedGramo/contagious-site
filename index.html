@@ -2,7 +2,17 @@
 <html lang="it">
 <head>
 <meta charset="utf-8" />
+<script>
+window.getStorage = window.getStorage || ((k, def=null) => {
+  try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }
+  catch { return def; }
+});
+window.setStorage = window.setStorage || ((k, v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+});
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" href="data:,">
 <meta name="robots" content="noindex,nofollow">
 <title>Contagious — MedGramo</title>
 <style>
@@ -954,19 +964,25 @@
   const requestedMode = resolveRequestedMode();
   if (requestedMode){
     MODE = requestedMode;
-  } else {
-    const storedMode = readStoredMode();
-    if (storedMode) MODE = storedMode;
   }
 
-  if (!VALID_MODES.has(MODE)){
-    MODE = 'covers';
-  }
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      if (!requestedMode){
+        const storedMode = readStoredMode();
+        if (storedMode) MODE = storedMode;
+      }
+    } catch(e){ console.error(e); }
 
-  if (modeSelect){
-    modeSelect.value = MODE;
-  }
-  writeStoredMode(MODE);
+    if (!VALID_MODES.has(MODE)){
+      MODE = 'covers';
+    }
+
+    if (modeSelect){
+      modeSelect.value = MODE;
+    }
+    writeStoredMode(MODE);
+  });
 
   const isIOSDevice = ()=>{
     const ua = window.navigator?.userAgent || '';
